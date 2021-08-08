@@ -35,9 +35,16 @@ function RootNavigator() {
         backgroundColor: Colors.light.tint 
       },
       headerTintColor: Colors.light.background,
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      }
     }}>
-      <Stack.Screen name="Root" component={BottomTabNavigator} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+    <Stack.Screen name="Root" component={BottomTabNavigator} 
+      options =  {{
+        title: 'Chat',
+      }}
+    />
+    <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );
 }
