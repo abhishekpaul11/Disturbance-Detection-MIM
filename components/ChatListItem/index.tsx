@@ -3,11 +3,13 @@ import { View, Text, Image} from "react-native";
 import { ChatListItemProps } from "../../types";
 import styles from "./style";
 import moment from "moment";
+import Colors from '../../constants/Colors';
+import useColorScheme from '../../hooks/useColorScheme';
 
 const ChatListItem = (props: ChatListItemProps) => {
   const { chatRoom } = props
   const user = chatRoom.users[1]
-  console.log(user.imageUri)
+  const colorScheme = useColorScheme();
   return(
     <View style={styles.container}>
 
@@ -18,7 +20,7 @@ const ChatListItem = (props: ChatListItemProps) => {
           <View style={styles.midContainer}>
 
             <View style={styles.upperContainer}>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.username}>{user.name}</Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.username,{color: Colors[colorScheme].text}]}>{user.name}</Text>
               <Text style={styles.time}>
                 {moment(chatRoom.lastMessage.createdAt).format('DD/MM/YYYY')}
               </Text>

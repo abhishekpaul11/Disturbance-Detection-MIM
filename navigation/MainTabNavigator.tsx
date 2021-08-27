@@ -23,25 +23,26 @@ export default function MainTabNavigator() {
     <MainTab.Navigator
       initialRouteName="Chats"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].background,
+        tabBarActiveTintColor: Colors[colorScheme].tabs,
+        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme].tint
+          backgroundColor: Colors[colorScheme].tint,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: "#fff",
+          backgroundColor: Colors[colorScheme].tabs,
           height: 4
         },
         tabBarLabelStyle: {
            fontWeight: 'bold',
            fontSize: 15
         },
-        tabBarShowIcons: true
+        tabBarShowIcons: true,
       }}>
       <MainTab.Screen
         name="Camera"
         component={TabTwoNavigator}
         options = {{
-          tabBarIcon: () => <Fontisto name="camera" color={'#fff'} size={18}/>,
+          tabBarIcon: () => <Fontisto name="camera" color={Colors[colorScheme].tabs} size={18}/>,
           tabBarLabel: () => null
         }}
       />
