@@ -39,7 +39,7 @@ export default [{
   }, {
     id: 'u4',
     name: 'Abhishek',
-    imageUri: 'https://lh3.googleusercontent.com/proxy/WlEjfdujgOv5pPY-HQiCQ7X9rsn60kh0FCOxNA9aiYiLonxVu7VrQLCGaGrO98T6xihbcKcjFVhBo_sniL2WMkj0RCpuARbHjsdaVUt13EO_GodepDKl1Ujh9cc_iIye0881MxGrxFI'
+    imageUri: 'https://us.123rf.com/450wm/happyvector071/happyvector0711904/happyvector071190416116/120957921-creative-illustration-of-default-avatar-profile-placeholder-isolated-on-background-art-design-grey-p.jpg?ver=6'
   }],
   lastMessage: {
     id: 'm3',
@@ -55,7 +55,7 @@ export default [{
   }, {
     id: 'u5',
     name: 'Aditya',
-    imageUri: 'https://lh3.googleusercontent.com/proxy/WlEjfdujgOv5pPY-HQiCQ7X9rsn60kh0FCOxNA9aiYiLonxVu7VrQLCGaGrO98T6xihbcKcjFVhBo_sniL2WMkj0RCpuARbHjsdaVUt13EO_GodepDKl1Ujh9cc_iIye0881MxGrxFI'
+    imageUri: 'https://us.123rf.com/450wm/happyvector071/happyvector0711904/happyvector071190416116/120957921-creative-illustration-of-default-avatar-profile-placeholder-isolated-on-background-art-design-grey-p.jpg?ver=6'
   }],
   lastMessage: {
     id: 'm4',
@@ -87,7 +87,7 @@ export default [{
   }, {
     id: 'u7',
     name: 'Jack',
-    imageUri: 'https://lh3.googleusercontent.com/proxy/WlEjfdujgOv5pPY-HQiCQ7X9rsn60kh0FCOxNA9aiYiLonxVu7VrQLCGaGrO98T6xihbcKcjFVhBo_sniL2WMkj0RCpuARbHjsdaVUt13EO_GodepDKl1Ujh9cc_iIye0881MxGrxFI'
+    imageUri: 'https://us.123rf.com/450wm/happyvector071/happyvector0711904/happyvector071190416116/120957921-creative-illustration-of-default-avatar-profile-placeholder-isolated-on-background-art-design-grey-p.jpg?ver=6'
   }],
   lastMessage: {
     id: 'm6',
