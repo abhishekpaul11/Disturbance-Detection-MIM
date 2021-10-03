@@ -37,7 +37,7 @@ const App = () => {
         //if there is no user with ID in db, then create one
         const newUser = {
           id: userInfo.attributes.sub,
-          name: userInfo.username,
+          name: userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1),
           imageUri: 'https://us.123rf.com/450wm/happyvector071/happyvector0711904/happyvector071190416116/120957921-creative-illustration-of-default-avatar-profile-placeholder-isolated-on-background-art-design-grey-p.jpg?ver=6',
           status: 'Focusing'
         }
