@@ -5,7 +5,7 @@ import ContactListItem from "../components/ContactListItem";
 import EditScreenInfo from '../components/EditScreenInfo';
 import { View } from '../components/Themed';
 
-import { API, graphqlOperation } from 'aws-amplify'
+import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { listUsers } from "../src/graphql/queries";
 
 export default function ChatScreen() {
@@ -16,7 +16,9 @@ export default function ChatScreen() {
     const fetchUsers = (async() => {
       try{
         const usersData = await await API.graphql(graphqlOperation(listUsers))
-        setUsers(usersData.data.listUsers.items)
+        const myData = await Auth.currentAuthenticatedUser({ bypassCache: true })
+        const contacts = usersData.data.listUsers.items.filter((user) => user.id != myData.attributes.sub)
+        setUsers(contacts)
       }
       catch (e) {}
     })()
