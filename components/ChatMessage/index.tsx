@@ -5,13 +5,14 @@ import styles from "./styles";
 
 export type ChatMessageProps = {
   message: Message
+  id: String
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
-  const { message } = props
+  const { message, id } = props
 
   const isMyMessage = () => {
-    return message.user.id === 'u1'
+    return message.user.id === id
   }
 
   return (

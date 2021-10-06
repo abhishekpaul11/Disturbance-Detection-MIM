@@ -16,7 +16,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
   useEffect(() => {
     const getOtherUser = (async() => {
-      const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true })
+      const userInfo = await Auth.currentAuthenticatedUser()
       const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != userInfo.attributes.sub))
       setUser(otherUser[0].user)
     })()

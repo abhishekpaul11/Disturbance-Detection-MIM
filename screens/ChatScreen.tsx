@@ -16,7 +16,7 @@ export default function ChatScreen() {
   useEffect(() => {
     const fetchChatRooms = (async() => {
        try{
-         const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true })
+         const userInfo = await Auth.currentAuthenticatedUser()
          const userData = await API.graphql(graphqlOperation(getChatListItem, {
            id: userInfo.attributes.sub
          }))

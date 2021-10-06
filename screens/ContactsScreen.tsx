@@ -16,7 +16,7 @@ export default function ChatScreen() {
     const fetchUsers = (async() => {
       try{
         const usersData = await await API.graphql(graphqlOperation(listUsers))
-        const myData = await Auth.currentAuthenticatedUser({ bypassCache: true })
+        const myData = await Auth.currentAuthenticatedUser()
         const contacts = usersData.data.listUsers.items.filter((user) => user.id != myData.attributes.sub)
         setUsers(contacts)
       }

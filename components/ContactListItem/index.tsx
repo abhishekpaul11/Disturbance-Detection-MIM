@@ -24,7 +24,7 @@ const ContactListItem = (props: ContactListItemProps) => {
 
   const onClick = async() => {
     //navigate to chat room with this user
-    const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true })
+    const userInfo = await Auth.currentAuthenticatedUser()
     const chatUsers = await API.graphql(graphqlOperation(getChatUsers, {
        id: userInfo.attributes.sub
     }))
