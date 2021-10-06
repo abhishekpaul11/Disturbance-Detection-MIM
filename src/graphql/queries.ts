@@ -9,8 +9,58 @@ export const getUser = /* GraphQL */ `
       name
       imageUri
       status
+      chatRoomUser {
+        items {
+          id
+          userID
+          chatRoomID
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
+    }
+  }
+`;
+export const getChatListItem = /* GraphQL */ `
+  query GetUser($id: ID!) {
+    getUser(id: $id) {
+      chatRoomUser {
+        items {
+          chatRoom {
+            id
+            chatRoomUser {
+              items {
+                user {
+                  id
+                  name
+                  imageUri
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const getChatUsers = /* GraphQL */ `
+  query GetUser($id: ID!) {
+    getUser(id: $id) {
+      chatRoomUser {
+        items {
+          chatRoom {
+            chatRoomUser {
+              items {
+                userID
+                chatRoomID
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -26,6 +76,108 @@ export const listUsers = /* GraphQL */ `
         name
         imageUri
         status
+        chatRoomUser {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getChatRoomUser = /* GraphQL */ `
+  query GetChatRoomUser($id: ID!) {
+    getChatRoomUser(id: $id) {
+      id
+      userID
+      chatRoomID
+      user {
+        id
+        name
+        imageUri
+        status
+        chatRoomUser {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      chatRoom {
+        id
+        chatRoomUser {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listChatRoomUsers = /* GraphQL */ `
+  query ListChatRoomUsers(
+    $filter: ModelChatRoomUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listChatRoomUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        userID
+        chatRoomID
+        user {
+          id
+          name
+          imageUri
+          status
+          createdAt
+          updatedAt
+        }
+        chatRoom {
+          id
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getChatRoom = /* GraphQL */ `
+  query GetChatRoom($id: ID!) {
+    getChatRoom(id: $id) {
+      id
+      chatRoomUser {
+        items {
+          id
+          userID
+          chatRoomID
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listChatRooms = /* GraphQL */ `
+  query ListChatRooms(
+    $filter: ModelChatRoomFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listChatRooms(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        chatRoomUser {
+          nextToken
+        }
         createdAt
         updatedAt
       }

@@ -52,7 +52,7 @@ export default function MainTabNavigator() {
       />
       <MainTab.Screen
         name="Important"
-        component={ChatScreen}
+        component={TabTwoNavigator}
       />
     </MainTab.Navigator>
   );
