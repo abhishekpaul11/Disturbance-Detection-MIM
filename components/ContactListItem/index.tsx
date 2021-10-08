@@ -36,13 +36,15 @@ const ContactListItem = (props: ContactListItemProps) => {
         try {
           //create a ChatRoom
           const newChatRoomData = await API.graphql(graphqlOperation(createChatRoom, {
-            input: {}
+            input: {
+              lastMessageID: ''
+            }
           }))
           if(!newChatRoomData.data){
             console.log('Failed to create a new Chat Room')
             return
           }
-          newChatRoom = newChatRoomData.data.createChatRoom
+          const newChatRoom = newChatRoomData.data.createChatRoom
 
           //add this user to Chat Room
           await API.graphql(graphqlOperation(createChatRoomUser, {

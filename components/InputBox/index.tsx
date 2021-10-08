@@ -4,11 +4,12 @@ import styles from "./styles";
 import { MaterialCommunityIcons, FontAwesome5, Entypo, Fontisto, MaterialIcons } from "@expo/vector-icons";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
-import { createMessage } from "../../src/graphql/mutations";
+import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
 
 const InputBox = (props) => {
 
   const { chatRoomID } = props
+  var flag = true
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
 
@@ -23,19 +24,36 @@ const InputBox = (props) => {
     console.warn('Microphone')
   }
 
-  const onSendPress = async() => {
-    //send to backend
-    try {
-      await API.graphql(graphqlOperation(createMessage, {
+  const updateChatRoomLastMessage = async(messageID: string) => {
+    try{
+      await API.graphql(graphqlOperation(updateChatRoom, {
         input: {
-          content: message,
-          userID: myUserID,
-          chatRoomID
+          id: chatRoomID,
+          lastMessageID: messageID
         }
       }))
     }
     catch(e) { console.log(e) }
-    setMessage('')
+  }
+
+  const onSendPress = async() => {
+    //send to backend
+    if(flag && message.trim() !== ""){
+      flag = false
+      try {
+        const sentMessage = await API.graphql(graphqlOperation(createMessage, {
+          input: {
+            content: message.trim(),
+            userID: myUserID,
+            chatRoomID
+          }
+        }))
+        updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+      }
+      catch(e) { console.log(e) }
+      setMessage('')
+      flag = true
+    }
   }
 
   const onPress = () => {

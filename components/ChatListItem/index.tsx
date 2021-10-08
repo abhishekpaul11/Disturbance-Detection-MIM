@@ -6,18 +6,16 @@ import moment from "moment";
 import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
-import { Auth } from 'aws-amplify'
 
 const ChatListItem = (props: ChatListItemProps) => {
-  const { chatRoom } = props
+  const { chatRoom, myID } = props
   const [user, setUser] = useState(null)
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   useEffect(() => {
     const getOtherUser = (async() => {
-      const userInfo = await Auth.currentAuthenticatedUser()
-      const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != userInfo.attributes.sub))
+      const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
       setUser(otherUser[0].user)
     })()
   },[])
@@ -26,6 +24,19 @@ const ChatListItem = (props: ChatListItemProps) => {
 
   const onClick = () => {
     navigation.navigate('ChatRoom',{id: chatRoom.id, name: user.name})
+  }
+
+  const displayTime = () => {
+    const diff = moment().diff(chatRoom.lastMessage.createdAt, 'days')
+    if(diff > 1) return moment(chatRoom.lastMessage.createdAt).format('Do MMM \'YY');
+    else if (diff == 1) return 'Yesterday'
+    else return moment(chatRoom.lastMessage.createdAt).format('h:mm a')
+  }
+
+  const displayMessage = () => {
+    if(!chatRoom.lastMessage) return 'You are yet to start a conversation'
+    const sender = chatRoom.lastMessage.user.id === myID ? 'You: ' : ''
+    return sender + chatRoom.lastMessage.content
   }
 
   return(
@@ -40,12 +51,10 @@ const ChatListItem = (props: ChatListItemProps) => {
 
               <View style={styles.upperContainer}>
                 <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.username,{color: Colors[colorScheme].text}]}>{user.name}</Text>
-                <Text style={styles.time}>
-                  {chatRoom.lastMessage && moment(chatRoom.lastMessage.createdAt).format('DD/MM/YYYY')}
-                </Text>
+                <Text style={styles.time}>{chatRoom.lastMessage && displayTime()}</Text>
               </View>
 
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.lastMessage}>{chatRoom.lastMessage ? chatRoom.lastMessage.content : ""}</Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={chatRoom.lastMessage ? styles.lastMessage : [styles.lastMessage, { fontStyle: 'italic'}]}>{displayMessage()}</Text>
             </View>
 
           </View>

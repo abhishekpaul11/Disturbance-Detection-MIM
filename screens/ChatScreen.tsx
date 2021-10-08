@@ -11,7 +11,7 @@ import { View } from '../components/Themed';
 
 export default function ChatScreen() {
 
-  const [chatRooms, setChatRooms] = useState()
+  const [chatRooms, setChatRooms] = useState([])
 
   useEffect(() => {
     const fetchChatRooms = (async() => {
@@ -29,8 +29,8 @@ export default function ChatScreen() {
     <View style={styles.container}>
       <FlatList
         data = {chatRooms}
-        renderItem = {({item}) => <ChatListItem chatRoom={item.chatRoom} />}
-        keyExtractor = {(item => item.id)}
+        renderItem = {({item}) => <ChatListItem chatRoom={item.chatRoom} myID={item.userID}/>}
+        keyExtractor = {(item => item.chatRoom.id)}
       />
       <NewMessageButton/>
     </View>

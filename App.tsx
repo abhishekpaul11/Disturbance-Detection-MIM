@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { LogBox } from "react-native";
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
@@ -18,6 +19,7 @@ import { withAuthenticator } from 'aws-amplify-react-native'
 const App = () => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  LogBox.ignoreLogs(['Setting a timer']);
 
   //run this snippet only when App is first mounted
   useEffect(() => {
