@@ -12,16 +12,8 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Chats: undefined;
-  Important: undefined;
-  Camera: undefined
-};
-
-export type TabOneParamList = {
-  TabOneScreen: undefined;
-};
-
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+  ImportantMessages: undefined;
+  ImportantContacts: undefined
 };
 
 export type User = {
@@ -36,11 +28,13 @@ export type Message = {
   content: String;
   createdAt: String;
   user: User;
+  chatRooID: String;
 }
 
 export type ChatRoom = {
   id: String;
   users: User[];
+  lastMessageID: String;
   lastMessage: Message;
 }
 
