@@ -4,7 +4,7 @@
  *
  */
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName, View } from 'react-native';
 
@@ -55,8 +55,11 @@ function RootNavigator() {
     <Stack.Screen
       name="ChatRoom"
       component={ChatRoomScreen}
-      options={({ route }) => ({
+      options={({ route, navigation }) => ({
         title: route.params.name,
+        headerLeft: () => (
+          <HeaderBackButton tintColor={'white'} onPress={()=>{navigation.navigate('Chats')}}/>
+        ),
         headerRight: () => (
           <View style={{flexDirection: 'row', width: 100, justifyContent: 'space-between', marginRight: 10}}>
             <FontAwesome5 name='video' size={22} color={'white'} />

@@ -1315,6 +1315,86 @@ export type OnMessageCreatedByChatRoomIDSubscription = {
   } | null,
 };
 
+export type OnChatRoomUserCreatedByUserIDSubscriptionVariables = {
+  userID: string,
+};
+
+export type OnChatRoomUserCreatedByUserIDSubscription = {
+  onChatRoomUserCreatedByUserID?:  {
+    __typename: "ChatRoomUser",
+    id: string,
+    userID: string,
+    chatRoomID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      imageUri?: string | null,
+      status?: string | null,
+      chatRoomUser?:  {
+        __typename: "ModelChatRoomUserConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    chatRoom?:  {
+      __typename: "ChatRoom",
+      id: string,
+      chatRoomUser?:  {
+        __typename: "ModelChatRoomUserConnection",
+        nextToken?: string | null,
+      } | null,
+      messages?:  {
+        __typename: "ModelMessageConnection",
+        nextToken?: string | null,
+      } | null,
+      lastMessageID: string,
+      lastMessage?:  {
+        __typename: "Message",
+        id: string,
+        createdAt: string,
+        content: string,
+        userID: string,
+        chatRoomID: string,
+        updatedAt: string,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUserUpdatedByUserIDSubscriptionVariables = {
+  id: string,
+};
+
+export type OnUserUpdatedByUserIDSubscription = {
+  onUserUpdatedByUserID?:  {
+    __typename: "User",
+    id: string,
+    name: string,
+    imageUri?: string | null,
+    status?: string | null,
+    chatRoomUser?:  {
+      __typename: "ModelChatRoomUserConnection",
+      items?:  Array< {
+        __typename: "ChatRoomUser",
+        id: string,
+        userID: string,
+        chatRoomID: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null > | null,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type OnCreateUserSubscription = {
   onCreateUser?:  {
     __typename: "User",

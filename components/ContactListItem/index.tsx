@@ -1,4 +1,4 @@
-import  * as React  from "react";
+import  React, { useEffect, useState }  from "react";
 import { View, Text, Image, TouchableWithoutFeedback} from "react-native";
 import { ContactListItemProps } from "../../types";
 import styles from "./style";
@@ -9,9 +9,11 @@ import { useNavigation } from "@react-navigation/native";
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createChatRoom, createChatRoomUser } from "../../src/graphql/mutations";
 import { getChatUsers } from "../../src/graphql/queries";
+import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
 
 const ContactListItem = (props: ContactListItemProps) => {
-  const { user } = props
+  const { data } = props
+  const [user, setUser] = useState(data)
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
@@ -21,6 +23,18 @@ const ContactListItem = (props: ContactListItemProps) => {
       name: name
     })
   }
+
+  useEffect(() => {
+    const sub = API.graphql({
+      query: onUserUpdatedByUserID,
+      variables: { id: user.id }
+    }).subscribe({
+      next: (data) => {
+        setUser(data.value.data.onUserUpdatedByUserID)
+      }
+    })
+    return () => sub.unsubscribe()
+  },[])
 
   const onClick = async() => {
     //navigate to chat room with this user

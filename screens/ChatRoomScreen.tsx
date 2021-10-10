@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, ImageBackground } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { FlatList, ImageBackground, Text, StyleSheet } from "react-native";
+import { BackHandler } from 'react-native';
+import { useRoute, useNavigation } from "@react-navigation/native";
 import ChatMessage from "../components/ChatMessage/index";
 import InputBox from "../components/InputBox/index";
 import background from "../assets/images/bricks.png";
@@ -14,6 +15,20 @@ const ChatRoomScreen = () => {
   const route = useRoute()
   const [messages, setMessages] = useState([])
   const [myID, setMyID] = useState(null)
+  const [flag, setFlag] = useState(false)
+  const navigation = useNavigation()
+
+  function handleBackButtonClick() {
+    navigation.navigate('Chats');
+    return true;
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    };
+  },[]);
 
   const updateChatRoomLastMessage = async(messageID: string) => {
     try{
@@ -40,6 +55,7 @@ const ChatRoomScreen = () => {
         chatRoomID: route.params.id,
         sortDirection: "DESC"
       }))
+      setFlag(true)
       setMessages(msgs.data.messagesByChatRoom.items)
     })()
   },[])
@@ -59,15 +75,30 @@ const ChatRoomScreen = () => {
   })
 
   return (
-    <ImageBackground style={{width: '100%', height: '100%'}} source = {background}>
+    <ImageBackground style={styles.background} source = {background}>
       <FlatList
         data = {messages}
         renderItem={({item}) => <ChatMessage message={item} id={myID}/>}
         inverted
       />
-    <InputBox chatRoomID={route.params.id} />
+      {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
+      <InputBox chatRoomID={route.params.id} />
     </ImageBackground>
   )
 }
+
+const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%'
+  },
+  text: {
+    fontSize: 16,
+    color: 'grey',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginBottom: '15%'
+  }
+})
 
 export default ChatRoomScreen

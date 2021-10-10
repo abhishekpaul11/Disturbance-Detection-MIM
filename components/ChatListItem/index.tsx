@@ -7,6 +7,9 @@ import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
 
+import { API } from "aws-amplify";
+import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
+
 const ChatListItem = (props: ChatListItemProps) => {
   const { chatRoom, myID } = props
   const [user, setUser] = useState(null)
@@ -14,10 +17,17 @@ const ChatListItem = (props: ChatListItemProps) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const getOtherUser = (async() => {
-      const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
-      setUser(otherUser[0].user)
-    })()
+    const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
+    setUser(otherUser[0].user)
+    const sub = API.graphql({
+      query: onUserUpdatedByUserID,
+      variables: { id: otherUser[0].user.id }
+    }).subscribe({
+      next: (data) => {
+        setUser(data.value.data.onUserUpdatedByUserID)
+      }
+    })
+    return () => sub.unsubscribe()
   },[])
 
   if(!user) { return null }
@@ -34,7 +44,6 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   const displayMessage = () => {
-    if(!chatRoom.lastMessage) return 'You are yet to start a conversation'
     const sender = chatRoom.lastMessage.user.id === myID ? 'You: ' : ''
     return sender + chatRoom.lastMessage.content
   }
@@ -51,10 +60,10 @@ const ChatListItem = (props: ChatListItemProps) => {
 
               <View style={styles.upperContainer}>
                 <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.username,{color: Colors[colorScheme].text}]}>{user.name}</Text>
-                <Text style={styles.time}>{chatRoom.lastMessage && displayTime()}</Text>
+                <Text style={styles.time}>{displayTime()}</Text>
               </View>
 
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={chatRoom.lastMessage ? styles.lastMessage : [styles.lastMessage, { fontStyle: 'italic'}]}>{displayMessage()}</Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.lastMessage}>{displayMessage()}</Text>
             </View>
 
           </View>
