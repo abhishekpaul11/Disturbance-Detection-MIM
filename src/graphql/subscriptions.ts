@@ -45,6 +45,49 @@ export const onMessageCreatedByChatRoomID = /* GraphQL */ `
     }
   }
 `;
+export const onIncomingMessage = /* GraphQL */ `
+  subscription OnIncomingMessage($chatRoomID: ID!, $userID: ID!) {
+    onIncomingMessage(chatRoomID: $chatRoomID, userID: $userID) {
+      id
+      createdAt
+      content
+      userID
+      chatRoomID
+      user {
+        id
+        name
+        imageUri
+        status
+        chatRoomUser {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      chatRoom {
+        id
+        chatRoomUser {
+          nextToken
+        }
+        messages {
+          nextToken
+        }
+        lastMessageID
+        lastMessage {
+          id
+          createdAt
+          content
+          userID
+          chatRoomID
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      updatedAt
+    }
+  }
+`;
 export const onChatRoomUserCreatedByUserID = /* GraphQL */ `
   subscription OnChatRoomUserCreatedByUserID($userID: ID!) {
     onChatRoomUserCreatedByUserID(userID: $userID) {

@@ -13,7 +13,7 @@ import { View, Text } from '../components/Themed';
 export default function ChatScreen() {
 
   const [chatRooms, setChatRooms] = useState([])
-  const [flag, forceUpdate] = useState(false)
+  const [flag, forceUpdate] = useState()
   const [prompt, setPrompt] = useState(false)
   const subscriptions = []
 
@@ -59,7 +59,7 @@ export default function ChatScreen() {
        variables: { userID: userInfo.attributes.sub }
      }).subscribe({
        next: (data) => {
-         forceUpdate(!flag)
+         forceUpdate(data.value.data.onChatRoomUserCreatedByUserID.id)
        }
      })
    })()

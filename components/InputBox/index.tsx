@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TextInput, View, TouchableOpacity } from "react-native";
 import styles from "./styles";
+import moment from "moment";
 import { MaterialCommunityIcons, FontAwesome5, Entypo, Fontisto, MaterialIcons } from "@expo/vector-icons";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
@@ -8,15 +9,16 @@ import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
 
 const InputBox = (props) => {
 
-  const { chatRoomID } = props
-  var flag = true
+  const { chatRoomID, addMessage } = props
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
+  const [myName, setMyName] = useState(null)
 
   useEffect(() => {
     const fetchUser = (async() => {
       const userInfo = await Auth.currentAuthenticatedUser()
       setMyUserID(userInfo.attributes.sub)
+      setMyName(userInfo.signInUserSession.accessToken.payload.username)
     })()
   },[])
 
@@ -38,8 +40,16 @@ const InputBox = (props) => {
 
   const onSendPress = async() => {
     //send to backend
-    if(flag && message.trim() !== ""){
-      flag = false
+    if(message.trim() !== ""){
+      addMessage({
+        user: {
+          name: myName.charAt(0).toUpperCase() + myName.slice(1),
+          id: myUserID
+        },
+        content: message.trim(),
+        createdAt: moment().toISOString()
+      })
+      setMessage('')
       try {
         const sentMessage = await API.graphql(graphqlOperation(createMessage, {
           input: {
@@ -51,8 +61,6 @@ const InputBox = (props) => {
         updateChatRoomLastMessage(sentMessage.data.createMessage.id)
       }
       catch(e) { console.log(e) }
-      setMessage('')
-      flag = true
     }
   }
 

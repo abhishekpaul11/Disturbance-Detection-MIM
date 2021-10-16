@@ -14,10 +14,12 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       fontSize: 16,
       height: 20,
-      width: 200
+      width: '64%'
     },
     midContainer: {
       justifyContent: 'space-around',
+      width: '81%',
+      marginLeft: 'auto'
     },
     upperContainer: {
       flexDirection: 'row',
@@ -26,13 +28,13 @@ const styles = StyleSheet.create({
       fontSize: 16,
       color: 'grey',
       height: 20,
-      width: 315
     },
     time:{
       fontSize: 13,
       color: 'grey',
       paddingRight: 5,
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      alignSelf: 'flex-end'
     },
     avatar: {
       width: 60,

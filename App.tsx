@@ -25,7 +25,7 @@ const App = () => {
   useEffect(() => {
     const fetchUser = (async() => {
       //get authenticated user from Auth
-      const userInfo = await Auth.currentAuthenticatedUser({ bypassCache: true })
+      const userInfo = await Auth.currentAuthenticatedUser()
       if(userInfo){
         //get user from Backend with the user ID from auth
         const userData = await API.graphql(graphqlOperation(getUser, {

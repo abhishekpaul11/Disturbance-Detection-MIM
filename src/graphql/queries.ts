@@ -66,6 +66,27 @@ export const getChatUsers = /* GraphQL */ `
               items {
                 userID
                 chatRoomID
+                chatRoom {
+                  id
+                  lastMessage {
+                    id
+                    content
+                    createdAt
+                    user {
+                      name
+                      id
+                    }
+                  }
+                  chatRoomUser {
+                    items {
+                      user {
+                        id
+                        name
+                        imageUri
+                      }
+                    }
+                  }
+                }
               }
             }
           }

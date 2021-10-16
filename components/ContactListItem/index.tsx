@@ -16,11 +16,13 @@ const ContactListItem = (props: ContactListItemProps) => {
   const [user, setUser] = useState(data)
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  var flag = true
 
-  const openChat = (chatRoomID, name) => {
+  const openChat = (chatRoomID, users, name) => {
     navigation.navigate('ChatRoom',{
       id: chatRoomID,
-      name: name
+      users,
+      name
     })
   }
 
@@ -38,48 +40,54 @@ const ContactListItem = (props: ContactListItemProps) => {
 
   const onClick = async() => {
     //navigate to chat room with this user
-    const userInfo = await Auth.currentAuthenticatedUser()
-    const chatUsers = await API.graphql(graphqlOperation(getChatUsers, {
-       id: userInfo.attributes.sub
-    }))
-    const chatRooms = chatUsers.data.getUser.chatRoomUser.items
-    var contacts = chatRooms.map((obj) => (obj.chatRoom.chatRoomUser.items))
-    contacts = contacts.reduce((arr, contact) => (arr.concat(contact)))
-    const currentContact = contacts.find((contact) => (contact.userID === user.id))
-    if(!currentContact){
-        try {
-          //create a ChatRoom
-          const newChatRoomData = await API.graphql(graphqlOperation(createChatRoom, {
-            input: {
-              lastMessageID: ''
+    if(flag){
+      flag = false
+      const userInfo = await Auth.currentAuthenticatedUser()
+      const chatUsers = await API.graphql(graphqlOperation(getChatUsers, {
+         id: userInfo.attributes.sub
+      }))
+      const chatRooms = chatUsers.data.getUser.chatRoomUser.items
+      var contacts = chatRooms.map((obj) => (obj.chatRoom.chatRoomUser.items))
+      if(contacts.length != 0) contacts = contacts.reduce((arr, contact) => (arr.concat(contact)))
+      const currentContact = contacts.find((contact) => (contact.userID === user.id))
+      if(!currentContact){
+          try {
+            //create a ChatRoom
+            const newChatRoomData = await API.graphql(graphqlOperation(createChatRoom, {
+              input: {
+                lastMessageID: ''
+              }
+            }))
+            if(!newChatRoomData.data){
+              console.log('Failed to create a new Chat Room')
+              return
             }
-          }))
-          if(!newChatRoomData.data){
-            console.log('Failed to create a new Chat Room')
-            return
+            const newChatRoom = newChatRoomData.data.createChatRoom
+
+            await Promise.all([
+              //add this user to Chat Room
+              API.graphql(graphqlOperation(createChatRoomUser, {
+                input: {
+                  userID: user.id,
+                  chatRoomID: newChatRoom.id
+                }
+              })),
+
+              //add authenticated user to Chat Room
+              API.graphql(graphqlOperation(createChatRoomUser, {
+                input: {
+                  userID: userInfo.attributes.sub,
+                  chatRoomID: newChatRoom.id
+                }
+              }))
+            ])
+            openChat(newChatRoom.id, [{user}], user.name)
           }
-          const newChatRoom = newChatRoomData.data.createChatRoom
-
-          //add this user to Chat Room
-          await API.graphql(graphqlOperation(createChatRoomUser, {
-            input: {
-              userID: user.id,
-              chatRoomID: newChatRoom.id
-            }
-          }))
-
-          //add authenticated user to Chat Room
-          await API.graphql(graphqlOperation(createChatRoomUser, {
-            input: {
-              userID: userInfo.attributes.sub,
-              chatRoomID: newChatRoom.id
-            }
-          }))
-          openChat(newChatRoom.id, user.name)
-        }
-        catch(e) { console.log(e) }
+          catch(e) { console.log(e) }
+      }
+      else { openChat(currentContact.chatRoom.id, [{user}], user.name) }
+      flag = true
     }
-    else { openChat(currentContact.chatRoomID, user.name) }
   }
 
   return(

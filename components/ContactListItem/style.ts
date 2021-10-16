@@ -13,11 +13,12 @@ const styles = StyleSheet.create({
     username: {
       fontWeight: 'bold',
       fontSize: 16,
-      height: 20,
-      width: 315
+      height: 20
     },
     midContainer: {
       justifyContent: 'space-around',
+      width: '81%',
+      marginLeft: 'auto'
     },
     avatar: {
       width: 60,
@@ -28,8 +29,7 @@ const styles = StyleSheet.create({
     lastMessage: {
       fontSize: 16,
       color: 'grey',
-      height: 20,
-      width: 315
+      height: 20
     }
 })
 

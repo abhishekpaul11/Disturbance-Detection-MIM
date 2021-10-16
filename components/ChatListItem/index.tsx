@@ -33,7 +33,8 @@ const ChatListItem = (props: ChatListItemProps) => {
   if(!user) { return null }
 
   const onClick = () => {
-    navigation.navigate('ChatRoom',{id: chatRoom.id, name: user.name})
+    const users = chatRoom.chatRoomUser.items.filter((elem) => elem.user.id !== myID)
+    navigation.navigate('ChatRoom',{id: chatRoom.id, users, name: user.name})
   }
 
   const displayTime = () => {
