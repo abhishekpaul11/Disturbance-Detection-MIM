@@ -6,8 +6,7 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   messageBox: {
-    borderRadius: 10,
-    padding: 10
+    borderRadius: 10
   },
   name: {
     color: Colors['light'].tint,
@@ -21,6 +20,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     color: 'gray',
     fontSize: 13
+  },
+  image: {
+    aspectRatio: 1/1.25,
+    width: 260,
+    borderRadius: 10
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: '45%',
+    left: '45%'
   }
 })
 

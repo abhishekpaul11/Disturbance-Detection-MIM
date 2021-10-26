@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { TextInput, View, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import moment from "moment";
-import { MaterialCommunityIcons, FontAwesome5, Entypo, Fontisto, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, FontAwesome5, Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
 
 const InputBox = (props) => {
 
-  const { chatRoomID, addMessage } = props
+  const { chatRoomID, addMessage, sendImage } = props
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
   const [myName, setMyName] = useState(null)
@@ -47,7 +47,8 @@ const InputBox = (props) => {
           id: myUserID
         },
         content: message.trim(),
-        createdAt: moment().toISOString()
+        createdAt: moment().toISOString(),
+        isImage: false
       })
       setMessage('')
       try {
@@ -55,7 +56,8 @@ const InputBox = (props) => {
           input: {
             content: message.trim(),
             userID: myUserID,
-            chatRoomID
+            chatRoomID,
+            isImage: false
           }
         }))
         updateChatRoomLastMessage(sentMessage.data.createMessage.id)
@@ -84,7 +86,11 @@ const InputBox = (props) => {
                    onChangeText = {setMessage}
                    />
         <Entypo name='attachment' size={24} color={'grey'} style={styles.icon}/>
-        {!message && <Fontisto name='camera' size={24} color={'grey'} style={styles.icon}/>}
+        {!message &&
+          <TouchableOpacity onPress = {sendImage}>
+            <Ionicons name='image-outline' size={26} color={'grey'} style={styles.icon}/>
+          </TouchableOpacity>
+        }
       </View>
       <TouchableOpacity onPress={onPress}>
         <View style={styles.buttonContainer}>

@@ -42,5 +42,11 @@
         }
       }
     }
+  },
+  "storage": {
+    "chat": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }

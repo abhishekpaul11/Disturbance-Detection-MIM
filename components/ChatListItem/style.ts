@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       fontSize: 16,
       height: 20,
-      width: '64%'
+      flex: 0.95
     },
     midContainer: {
       justifyContent: 'space-around',
@@ -27,7 +27,13 @@ const styles = StyleSheet.create({
     lastMessage: {
       fontSize: 16,
       color: 'grey',
-      height: 20,
+      height: 20
+    },
+    messageContainer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      width: '100%',
+      paddingRight: 5
     },
     time:{
       fontSize: 13,

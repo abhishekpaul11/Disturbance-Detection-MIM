@@ -6,6 +6,7 @@ import moment from "moment";
 import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
+import { FontAwesome } from '@expo/vector-icons';
 
 import { API } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -45,8 +46,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   const displayMessage = () => {
-    const sender = chatRoom.lastMessage.user.id === myID ? 'You: ' : ''
-    return sender + chatRoom.lastMessage.content
+    return chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
   }
 
   return(
@@ -64,7 +64,11 @@ const ChatListItem = (props: ChatListItemProps) => {
                 <Text style={styles.time}>{displayTime()}</Text>
               </View>
 
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.lastMessage}>{displayMessage()}</Text>
+              <View style={styles.messageContainer}>
+                {chatRoom.lastMessage.user.id === myID && <Text style={styles.lastMessage}>You: </Text>}
+                {chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color="grey" />}
+                <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.lastMessage,{flex: 1}]}>{displayMessage()}</Text>
+              </View>
             </View>
 
           </View>

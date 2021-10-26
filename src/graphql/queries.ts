@@ -35,6 +35,7 @@ export const getChatListItem = /* GraphQL */ `
             lastMessage {
               id
               content
+              isImage
               createdAt
               user {
                 name
@@ -149,6 +150,7 @@ export const getChatRoomUser = /* GraphQL */ `
           content
           userID
           chatRoomID
+          isImage
           updatedAt
         }
         createdAt
@@ -212,6 +214,7 @@ export const getChatRoom = /* GraphQL */ `
           content
           userID
           chatRoomID
+          isImage
           updatedAt
         }
         nextToken
@@ -223,6 +226,7 @@ export const getChatRoom = /* GraphQL */ `
         content
         userID
         chatRoomID
+        isImage
         user {
           id
           name
@@ -266,6 +270,7 @@ export const listChatRooms = /* GraphQL */ `
           content
           userID
           chatRoomID
+          isImage
           updatedAt
         }
         createdAt
@@ -283,6 +288,7 @@ export const getMessage = /* GraphQL */ `
       content
       userID
       chatRoomID
+      isImage
       user {
         id
         name
@@ -309,6 +315,7 @@ export const getMessage = /* GraphQL */ `
           content
           userID
           chatRoomID
+          isImage
           updatedAt
         }
         createdAt
@@ -331,6 +338,7 @@ export const listMessages = /* GraphQL */ `
         content
         userID
         chatRoomID
+        isImage
         user {
           id
           name
@@ -374,6 +382,7 @@ export const messagesByChatRoom = /* GraphQL */ `
         content
         userID
         chatRoomID
+        isImage
         user {
           id
           name
