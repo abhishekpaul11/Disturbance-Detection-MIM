@@ -19,13 +19,17 @@ const ChatRoomScreen = () => {
   const [myName, setMyName] = useState(null)
   const [flag, setFlag] = useState(false)
   const [snapLock, setSnapLock] = useState(true)
+  const emo = useRef(null)
+  const [showEmo, hideEmo] = useState(true)
   const navigation = useNavigation()
   var subscriptions = []
   const bottomSheetRef = useRef<BottomSheet>(null);
 
+  const getEmoji = (emoji) => { emo.current = emoji }
+
   function handleBackButtonClick() {
     bottomSheetRef?.current?.close()
-    navigation.navigate('Chats');
+    emo.current ? hideEmo(!showEmo) : navigation.navigate('Chats')
     return true;
   }
 
@@ -34,7 +38,7 @@ const ChatRoomScreen = () => {
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
     };
-  },[]);
+  },[showEmo]);
 
   const updateChatRoomLastMessage = async(messageID: string) => {
     try{
@@ -102,7 +106,7 @@ const ChatRoomScreen = () => {
         inverted
       />
       {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
-      <InputBox chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage}/>
+      <InputBox chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}

@@ -64,17 +64,17 @@ const ChatMessage = (props: ChatMessageProps) => {
   }
 
   return (
-    <Pressable onPress={() => openImage(message)} >
-      <View style = {styles.container}>
-        <View style = {
-          [styles.messageBox,{
-            backgroundColor: isMyMessage() ? '#e3bbf0' : 'white',
-            marginRight: isMyMessage() ? 5 : 50,
-            marginLeft: isMyMessage() ? 50 : 5,
-            alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
-            padding: message.isImage ? 5 : 10
-          }]}>
-          {false && <Text style={styles.name}>{message.user.name}</Text>}
+    <View style = {styles.container}>
+      <View style = {
+        [styles.messageBox,{
+          backgroundColor: isMyMessage() ? '#e3bbf0' : 'white',
+          marginRight: isMyMessage() ? 5 : 50,
+          marginLeft: isMyMessage() ? 50 : 5,
+          alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
+          padding: message.isImage ? 5 : 10
+        }]}>
+        <Pressable onPress={() => openImage(message)} >
+          {false && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
           {message.isImage ?
             <View>
               {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
@@ -83,9 +83,9 @@ const ChatMessage = (props: ChatMessageProps) => {
           :
             <Text style = {styles.message}>{message.content}</Text>}
           <Text style = {styles.time}>{timestamp()}</Text>
-        </View>
+        </Pressable>
       </View>
-    </Pressable>
+    </View>
   )
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState }  from "react";
-import { View, Text, Image, TouchableWithoutFeedback} from "react-native";
+import { View, Text, Image } from "react-native";
+import { TouchableNativeFeedback } from "react-native-gesture-handler";
 import { ChatListItemProps } from "../../types";
 import styles from "./style";
 import moment from "moment";
@@ -50,7 +51,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   return(
-    <TouchableWithoutFeedback onPress={onClick}>
+    <TouchableNativeFeedback onPress={onClick} background={TouchableNativeFeedback.Ripple(colorScheme=='dark' ? '#cccccc42' : '#ccc')} useForeground={false}>
       <View style={styles.container}>
 
           <View style={styles.leftContainer}>
@@ -73,7 +74,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
           </View>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableNativeFeedback>
   )
 }
 

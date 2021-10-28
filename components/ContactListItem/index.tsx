@@ -1,5 +1,5 @@
 import  React, { useEffect, useState }  from "react";
-import { View, Text, Image, TouchableWithoutFeedback} from "react-native";
+import { View, Text, Image, TouchableNativeFeedback} from "react-native";
 import { ContactListItemProps } from "../../types";
 import styles from "./style";
 import Colors from '../../constants/Colors';
@@ -91,7 +91,7 @@ const ContactListItem = (props: ContactListItemProps) => {
   }
 
   return(
-    <TouchableWithoutFeedback onPress={onClick}>
+    <TouchableNativeFeedback onPress={onClick} background={TouchableNativeFeedback.Ripple(colorScheme=='dark' ? '#cccccc42' : '#ccc')} useForeground={false}>
       <View style={styles.container}>
           <View style={styles.leftContainer}>
 
@@ -104,7 +104,7 @@ const ContactListItem = (props: ContactListItemProps) => {
 
           </View>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableNativeFeedback>
   )
 }
 

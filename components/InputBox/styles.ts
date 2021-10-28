@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: Colors.light.tint,
-    alignItems: 'flex-end'
+    alignItems: 'center'
   },
   textInput: {
     flex: 1,
@@ -34,8 +34,10 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 5
+  },
+  emojiContainer: {
+    backgroundColor: '#ffffffaa'
   }
-
 })
 
 export default styles

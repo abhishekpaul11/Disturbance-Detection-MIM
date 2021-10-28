@@ -19,6 +19,7 @@ amplify/logs
 amplify/mock-data
 amplify/backend/amplify-meta.json
 amplify/backend/awscloudformation
+amplify/backend/storage/chat/parameters.json
 amplify/backend/.temp
 build/
 dist/
