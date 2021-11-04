@@ -10,7 +10,7 @@ import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
 
 const InputBox = (props) => {
 
-  const { chatRoomID, addMessage, sendImage, getEmoji, showEmo } = props
+  const { chatRoomID, addMessage, sendImage, getEmoji, showEmo, flatlist } = props
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
   const [myName, setMyName] = useState(null)
@@ -63,6 +63,7 @@ const InputBox = (props) => {
         isImage: false
       })
       setMessage('')
+      flatlist.current.scrollToIndex({index: 0})
       try {
         const sentMessage = await API.graphql(graphqlOperation(createMessage, {
           input: {
@@ -152,7 +153,6 @@ const InputBox = (props) => {
           }
           <TextInput ref = {keyboard}
                      placeholder="Say Something"
-                     selectionColor = {'#75228f'}
                      style={styles.textInput}
                      multiline
                      value = {message}

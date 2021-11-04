@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { FlatList, ImageBackground, Text, StyleSheet, View, Keyboard, BackHandler } from "react-native";
+import { FlatList, ImageBackground, Text, StyleSheet, View, Keyboard, BackHandler, ActivityIndicator } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import ChatMessage from "../components/ChatMessage/index";
 import ImageSelect from "../components/ImageSelect/index";
@@ -24,6 +24,7 @@ const ChatRoomScreen = () => {
   const navigation = useNavigation()
   var subscriptions = []
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const flatlist = useRef<FlatList>(null)
 
   const getEmoji = (emoji) => { emo.current = emoji }
 
@@ -100,13 +101,16 @@ const ChatRoomScreen = () => {
   return (
     <ImageBackground style={styles.background} source = {background}>
       <FlatList
+        ref = {flatlist}
+        keyboardShouldPersistTaps={'always'}
         data = {messages}
         renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef}/>}
         keyExtractor={(item) => item.createdAt}
         inverted
       />
+      {!flag && <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>}
       {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
-      <InputBox chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
+      <InputBox flatlist={flatlist} chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
@@ -130,6 +134,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginBottom: '15%'
+  },
+  loading: {
+    top: '45%',
+    left: '45%',
+    position: 'absolute'
   }
 })
 

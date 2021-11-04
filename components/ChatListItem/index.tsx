@@ -1,6 +1,5 @@
 import React, { useEffect, useState }  from "react";
 import { View, Text, Image } from "react-native";
-import { TouchableNativeFeedback } from "react-native-gesture-handler";
 import { ChatListItemProps } from "../../types";
 import styles from "./style";
 import moment from "moment";
@@ -8,6 +7,7 @@ import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from '@expo/vector-icons';
+import { TouchableRipple } from "react-native-paper";
 
 import { API } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -51,7 +51,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   return(
-    <TouchableNativeFeedback onPress={onClick} background={TouchableNativeFeedback.Ripple(colorScheme=='dark' ? '#cccccc42' : '#ccc')} useForeground={false}>
+    <TouchableRipple onPress={onClick} rippleColor={colorScheme == 'dark' ? '#cccccc42' : '#ccc'}>
       <View style={styles.container}>
 
           <View style={styles.leftContainer}>
@@ -74,7 +74,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
           </View>
       </View>
-    </TouchableNativeFeedback>
+    </TouchableRipple>
   )
 }
 

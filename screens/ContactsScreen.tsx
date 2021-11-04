@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ContactListItem from "../components/ContactListItem";
 
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -39,6 +39,9 @@ export default function ChatScreen() {
     return () => sub.unsubscribe()
   },[])
 
+  if(!prompt)
+    return(<ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>)
+
   return (
     <View style={styles.container}>
       {users.length==0 && prompt && <Text style={styles.text}>{'You are the only one :(\nShare the app to interact with others'}</Text>}
@@ -64,5 +67,8 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: '60%'
+  },
+  loading: {
+    top: '45%'
   }
 });

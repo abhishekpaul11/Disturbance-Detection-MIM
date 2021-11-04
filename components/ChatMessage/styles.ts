@@ -1,5 +1,7 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/Colors";
+
+const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
@@ -22,9 +24,9 @@ const styles = StyleSheet.create({
     fontSize: 13
   },
   image: {
-    aspectRatio: 1/1.25,
-    width: 260,
-    borderRadius: 10
+    minWidth: '100%',
+    borderRadius: 8,
+    maxHeight: 350/823 * windowHeight
   },
   activityIndicator: {
     position: 'absolute',

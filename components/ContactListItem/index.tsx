@@ -1,10 +1,11 @@
 import  React, { useEffect, useState }  from "react";
-import { View, Text, Image, TouchableNativeFeedback} from "react-native";
+import { View, Text, Image } from "react-native";
 import { ContactListItemProps } from "../../types";
 import styles from "./style";
 import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
+import { TouchableRipple } from "react-native-paper";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createChatRoom, createChatRoomUser } from "../../src/graphql/mutations";
@@ -91,7 +92,7 @@ const ContactListItem = (props: ContactListItemProps) => {
   }
 
   return(
-    <TouchableNativeFeedback onPress={onClick} background={TouchableNativeFeedback.Ripple(colorScheme=='dark' ? '#cccccc42' : '#ccc')} useForeground={false}>
+    <TouchableRipple onPress={onClick} rippleColor={colorScheme == 'dark' ? '#cccccc42' : '#ccc'}>
       <View style={styles.container}>
           <View style={styles.leftContainer}>
 
@@ -104,7 +105,7 @@ const ContactListItem = (props: ContactListItemProps) => {
 
           </View>
       </View>
-    </TouchableNativeFeedback>
+    </TouchableRipple>
   )
 }
 

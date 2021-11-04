@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
 
@@ -64,9 +64,12 @@ export default function ChatScreen() {
      })
    })()
    return () => sub.unsubscribe()
- },[])
+  },[])
 
-  return (
+ if(!prompt)
+   return(<ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>)
+
+ return (
     <View style={styles.container}>
       {chatRooms.length==0 && prompt && <Text style={styles.text}>{'No existing chats\nOpen contacts to start a conversation'}</Text>}
       <FlatList
@@ -91,5 +94,8 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: '50%'
+  },
+  loading: {
+    top: '45%'
   }
 });

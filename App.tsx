@@ -12,6 +12,7 @@ import Amplify, { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getUser } from "./src/graphql/queries";
 import { createUser } from "./src/graphql/mutations";
 import config from './aws-exports'
+import { RootSiblingParent } from 'react-native-root-siblings';
 Amplify.configure(config)
 
 import { withAuthenticator } from 'aws-amplify-react-native'
@@ -55,8 +56,10 @@ const App = () => {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar style={'light'}/>
+        <RootSiblingParent>
+          <Navigation colorScheme={colorScheme} />
+          <StatusBar style={'light'}/>
+        </RootSiblingParent>
       </SafeAreaProvider>
     );
   }
