@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LogBox } from "react-native";
+import { RecoilRoot } from "recoil"
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
@@ -57,7 +58,9 @@ const App = () => {
     return (
       <SafeAreaProvider>
         <RootSiblingParent>
-          <Navigation colorScheme={colorScheme} />
+          <RecoilRoot>
+            <Navigation colorScheme={colorScheme} />
+          </RecoilRoot>
           <StatusBar style={'light'}/>
         </RootSiblingParent>
       </SafeAreaProvider>

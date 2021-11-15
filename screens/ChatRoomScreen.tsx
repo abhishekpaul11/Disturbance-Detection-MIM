@@ -5,12 +5,14 @@ import ChatMessage from "../components/ChatMessage/index";
 import ImageSelect from "../components/ImageSelect/index";
 import InputBox from "../components/InputBox/index";
 import background from "../assets/images/bricks.png";
+import { useRecoilState } from "recoil";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { messagesByChatRoom } from "../src/graphql/queries";
 import { updateChatRoom } from "../src/graphql/mutations";
 import { onIncomingMessage } from "../src/graphql/subscriptions";
 import BottomSheet from '@gorhom/bottom-sheet';
+import { workmode } from "../atoms/WorkMode";
 
 const ChatRoomScreen = () => {
   const route = useRoute()
@@ -25,12 +27,14 @@ const ChatRoomScreen = () => {
   var subscriptions = []
   const bottomSheetRef = useRef<BottomSheet>(null);
   const flatlist = useRef<FlatList>(null)
+  const [globalWorkMode] = useRecoilState(workmode)
 
   const getEmoji = (emoji) => { emo.current = emoji }
 
   function handleBackButtonClick() {
     bottomSheetRef?.current?.close()
-    emo.current ? hideEmo(!showEmo) : navigation.navigate('Chats')
+    if(emo.current) hideEmo(!showEmo)
+    else navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')
     return true;
   }
 
@@ -39,7 +43,7 @@ const ChatRoomScreen = () => {
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
     };
-  },[showEmo]);
+  },[showEmo, globalWorkMode]);
 
   const updateChatRoomLastMessage = async(messageID: string) => {
     try{
@@ -105,12 +109,12 @@ const ChatRoomScreen = () => {
         keyboardShouldPersistTaps={'always'}
         data = {messages}
         renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef}/>}
-        keyExtractor={(item) => item.createdAt}
+        keyExtractor={(item) => item.user.name + item.createdAt}
         inverted
       />
       {!flag && <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>}
       {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
-      <InputBox flatlist={flatlist} chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
+      <InputBox flatlist={flatlist} isFirst={messages.length==0} chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}

@@ -12,11 +12,13 @@ export const createUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -37,11 +39,13 @@ export const updateUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -62,11 +66,13 @@ export const deleteUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -86,11 +92,13 @@ export const createChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -132,11 +140,13 @@ export const updateChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -178,11 +188,13 @@ export const deleteChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -227,6 +239,7 @@ export const createChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -257,6 +270,7 @@ export const createChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -285,6 +299,7 @@ export const updateChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -315,6 +330,7 @@ export const updateChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -343,6 +359,7 @@ export const deleteChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -373,6 +390,7 @@ export const deleteChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -406,6 +424,7 @@ export const createMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -454,6 +473,7 @@ export const updateMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -502,6 +522,7 @@ export const deleteMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }

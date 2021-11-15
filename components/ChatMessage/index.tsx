@@ -119,7 +119,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                           position: 100,
                           shadow: true,
                           animation: true,
-                          backgroundColor: '#ccc',
+                          backgroundColor: '#ffffff',
                           textColor: 'black',
                           shadowColor: 'black',
                           opacity: 0.9

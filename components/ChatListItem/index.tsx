@@ -8,15 +8,23 @@ import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from '@expo/vector-icons';
 import { TouchableRipple } from "react-native-paper";
+import Toast from 'react-native-root-toast';
+import { useRecoilState } from "recoil";
+import { ImportantChats, UnimportantChats } from "../../atoms/WorkMode";
 
-import { API } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
+import { updateChatRoomUser } from "../../src/graphql/mutations";
 
 const ChatListItem = (props: ChatListItemProps) => {
-  const { chatRoom, myID } = props
+  const { chatRoomUser, myID } = props
+  const chatRoom = chatRoomUser.chatRoom
   const [user, setUser] = useState(null)
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  const [importantChats, setImportantChats] = useRecoilState(ImportantChats)
+  const [unImpChats, setUnImpChats] = useRecoilState(UnimportantChats)
+  const [important, toggleImp] = useState(chatRoomUser.isImportant)
 
   useEffect(() => {
     const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
@@ -36,7 +44,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
   const onClick = () => {
     const users = chatRoom.chatRoomUser.items.filter((elem) => elem.user.id !== myID)
-    navigation.navigate('ChatRoom',{id: chatRoom.id, users, name: user.name})
+    navigation.navigate('ChatRoom',{id: chatRoom.id, users, name: user.name, isImportant: important, chatRoomUser })
   }
 
   const displayTime = () => {
@@ -50,8 +58,44 @@ const ChatListItem = (props: ChatListItemProps) => {
     return chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
   }
 
+  const toggleImportant = () => {
+    const prevStatus = important
+    toggleImp(!important)
+    const keyword = prevStatus ? 'Unimportant' : 'Important'
+    Toast.show('Contact marked as ' + keyword,{
+      duration: 1000,
+      position: -100,
+      shadow: true,
+      animation: true,
+      backgroundColor: '#ffffff',
+      textColor: 'black',
+      shadowColor: 'black',
+      opacity: 0.9
+    })
+    var newChatRoomUser = Object.assign({}, chatRoomUser)
+    newChatRoomUser.isImportant = !prevStatus
+    if(prevStatus){
+      setImportantChats(importantChats.filter((item) => item.id !== chatRoomUser.id))
+      const chats = [...unImpChats, newChatRoomUser]
+      chats.sort((a,b) => (new Date(a.chatRoom.lastMessage.createdAt) < new Date(b.chatRoom.lastMessage.createdAt)))
+      setUnImpChats(chats)
+    }
+    else{
+      setUnImpChats(unImpChats.filter((item) => item.id !== chatRoomUser.id))
+      const chats = [...importantChats, newChatRoomUser]
+      chats.sort((a,b) => (new Date(a.chatRoom.lastMessage.createdAt) < new Date(b.chatRoom.lastMessage.createdAt)))
+      setImportantChats(chats)
+    }
+    API.graphql(graphqlOperation(updateChatRoomUser, {
+      input: {
+        id: chatRoomUser.id,
+        isImportant: !prevStatus
+      }
+    }))
+  }
+
   return(
-    <TouchableRipple onPress={onClick} rippleColor={colorScheme == 'dark' ? '#cccccc42' : '#ccc'}>
+    <TouchableRipple onPress={onClick} onLongPress={toggleImportant} rippleColor={Colors[colorScheme].rippleColor} style={{backgroundColor: important ? Colors[colorScheme].important : 'transparent'}}>
       <View style={styles.container}>
 
           <View style={styles.leftContainer}>

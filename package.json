@@ -51,6 +51,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-tab-view": "^3.1.1",
     "react-native-web": "~0.13.12",
+    "recoil": "^0.5.0",
     "unimodules-permissions-interface": "^6.1.0"
   },
   "devDependencies": {

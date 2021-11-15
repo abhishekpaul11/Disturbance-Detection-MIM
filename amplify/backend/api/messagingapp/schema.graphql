@@ -3,6 +3,7 @@ type User @model {
   name: String!
   imageUri: String
   status: String
+  impMessages: [ID]
   chatRoomUser: [ChatRoomUser] @connection(keyName: "byUser", fields: ["id"])
 }
 
@@ -13,6 +14,7 @@ type ChatRoomUser
   id: ID!
   userID: ID!
   chatRoomID: ID!
+  isImportant: Boolean!
   user: User @connection(fields: ["userID"])
   chatRoom: ChatRoom @connection(fields: ["chatRoomID"])
 }
@@ -35,6 +37,10 @@ type Message @model
   isImage: Boolean!
   user: User @connection(fields: ["userID"])
   chatRoom: ChatRoom @connection(fields: ["chatRoomID"])
+}
+
+type Query {
+    batchGetMessages(ids: [ID]): [Message]
 }
 
 type Subscription {

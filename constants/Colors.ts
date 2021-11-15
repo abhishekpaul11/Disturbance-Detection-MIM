@@ -9,6 +9,8 @@ export default {
     tabIconDefault: '#bd8fcd',
     tabIconSelected: '#fff',
     tabs: '#fff',
+    rippleColor: '#ccc',
+    important: '#e3bbf080'
   },
   dark: {
     text: '#fff',
@@ -17,5 +19,7 @@ export default {
     tabIconDefault: '#81858c',
     tabIconSelected: '#75228f',
     tabs: '#75228f',
+    rippleColor: '#cccccc42',
+    important: '#cccccc45'
   },
 };

@@ -5,8 +5,8 @@ import { Text, View } from '../components/Themed';
 
 export default function ImportantMessagesScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{'Work Mode is off\nTurn it on to view Messages marked as \'Important\''}</Text>
+    <View style={[styles.container, {paddingHorizontal: 10}]}>
+      <Text style={styles.text}>{'Work Mode is OFF\nTurn it ON to view Messages marked as \'Important\''}</Text>
     </View>
   );
 }

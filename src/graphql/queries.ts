@@ -2,6 +2,52 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const batchGetMessages = /* GraphQL */ `
+  query BatchGetMessages($ids: [ID]) {
+    batchGetMessages(ids: $ids) {
+      id
+      createdAt
+      content
+      userID
+      chatRoomID
+      isImage
+      user {
+        id
+        name
+        imageUri
+        status
+        impMessages
+        chatRoomUser {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      chatRoom {
+        id
+        chatRoomUser {
+          nextToken
+        }
+        messages {
+          nextToken
+        }
+        lastMessageID
+        lastMessage {
+          id
+          createdAt
+          content
+          userID
+          chatRoomID
+          isImage
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      updatedAt
+    }
+  }
+`;
 export const getUser = /* GraphQL */ `
   query GetUser($id: ID!) {
     getUser(id: $id) {
@@ -9,11 +55,13 @@ export const getUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -29,7 +77,9 @@ export const getChatListItem = /* GraphQL */ `
     getUser(id: $id) {
       chatRoomUser {
         items {
+          id
           userID
+          isImportant
           chatRoom {
             id
             lastMessage {
@@ -65,8 +115,10 @@ export const getChatUsers = /* GraphQL */ `
           chatRoom {
             chatRoomUser {
               items {
+                id
                 userID
                 chatRoomID
+                isImportant
                 chatRoom {
                   id
                   lastMessage {
@@ -108,6 +160,7 @@ export const listUsers = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -124,11 +177,13 @@ export const getChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -172,11 +227,13 @@ export const listChatRoomUsers = /* GraphQL */ `
         id
         userID
         chatRoomID
+        isImportant
         user {
           id
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -202,6 +259,7 @@ export const getChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -232,6 +290,7 @@ export const getChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -294,6 +353,7 @@ export const getMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -344,6 +404,7 @@ export const listMessages = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -388,6 +449,7 @@ export const messagesByChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }

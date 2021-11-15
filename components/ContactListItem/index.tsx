@@ -19,11 +19,13 @@ const ContactListItem = (props: ContactListItemProps) => {
   const navigation = useNavigation();
   var flag = true
 
-  const openChat = (chatRoomID, users, name) => {
+  const openChat = (chatRoomID, users, name, isImportant, chatRoomUser) => {
     navigation.navigate('ChatRoom',{
       id: chatRoomID,
       users,
-      name
+      name,
+      isImportant,
+      chatRoomUser
     })
   }
 
@@ -65,12 +67,13 @@ const ContactListItem = (props: ContactListItemProps) => {
             }
             const newChatRoom = newChatRoomData.data.createChatRoom
 
-            await Promise.all([
+            const [, myChatRoomUser] = await Promise.all([
               //add this user to Chat Room
               API.graphql(graphqlOperation(createChatRoomUser, {
                 input: {
                   userID: user.id,
-                  chatRoomID: newChatRoom.id
+                  chatRoomID: newChatRoom.id,
+                  isImportant: false
                 }
               })),
 
@@ -78,21 +81,25 @@ const ContactListItem = (props: ContactListItemProps) => {
               API.graphql(graphqlOperation(createChatRoomUser, {
                 input: {
                   userID: userInfo.attributes.sub,
-                  chatRoomID: newChatRoom.id
+                  chatRoomID: newChatRoom.id,
+                  isImportant: false
                 }
               }))
             ])
-            openChat(newChatRoom.id, [{user}], user.name)
+            openChat(newChatRoom.id, [{user}], user.name, false, myChatRoomUser.data.createChatRoomUser)
           }
           catch(e) { console.log(e) }
       }
-      else { openChat(currentContact.chatRoom.id, [{user}], user.name) }
+      else {
+        const myContact = contacts.find((contact) => (contact.userID === userInfo.attributes.sub && contact.chatRoomID === currentContact.chatRoomID))
+        openChat(currentContact.chatRoom.id, [{user}], user.name, myContact.isImportant, myContact)
+      }
       flag = true
     }
   }
 
   return(
-    <TouchableRipple onPress={onClick} rippleColor={colorScheme == 'dark' ? '#cccccc42' : '#ccc'}>
+    <TouchableRipple onPress={onClick} rippleColor={Colors[colorScheme].rippleColor}>
       <View style={styles.container}>
           <View style={styles.leftContainer}>
 

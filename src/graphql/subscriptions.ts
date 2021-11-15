@@ -16,6 +16,7 @@ export const onMessageCreatedByChatRoomID = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -61,6 +62,7 @@ export const onIncomingMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -98,11 +100,13 @@ export const onChatRoomUserCreatedByUserID = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -142,11 +146,13 @@ export const onUserUpdatedByUserID = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -164,11 +170,13 @@ export const onCreateUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -186,11 +194,13 @@ export const onUpdateUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -208,11 +218,13 @@ export const onDeleteUser = /* GraphQL */ `
       name
       imageUri
       status
+      impMessages
       chatRoomUser {
         items {
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -229,11 +241,13 @@ export const onCreateChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -272,11 +286,13 @@ export const onUpdateChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -315,11 +331,13 @@ export const onDeleteChatRoomUser = /* GraphQL */ `
       id
       userID
       chatRoomID
+      isImportant
       user {
         id
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -361,6 +379,7 @@ export const onCreateChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -391,6 +410,7 @@ export const onCreateChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -416,6 +436,7 @@ export const onUpdateChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -446,6 +467,7 @@ export const onUpdateChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -471,6 +493,7 @@ export const onDeleteChatRoom = /* GraphQL */ `
           id
           userID
           chatRoomID
+          isImportant
           createdAt
           updatedAt
         }
@@ -501,6 +524,7 @@ export const onDeleteChatRoom = /* GraphQL */ `
           name
           imageUri
           status
+          impMessages
           createdAt
           updatedAt
         }
@@ -531,6 +555,7 @@ export const onCreateMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -576,6 +601,7 @@ export const onUpdateMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }
@@ -621,6 +647,7 @@ export const onDeleteMessage = /* GraphQL */ `
         name
         imageUri
         status
+        impMessages
         chatRoomUser {
           nextToken
         }

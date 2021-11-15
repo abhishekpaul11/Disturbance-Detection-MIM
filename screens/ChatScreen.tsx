@@ -6,6 +6,8 @@ import NewMessageButton from "../components/NewMessageButton";
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
 import { onMessageCreatedByChatRoomID, onChatRoomUserCreatedByUserID } from "../src/graphql/subscriptions";
+import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock } from "../atoms/WorkMode";
+import { useRecoilState } from "recoil";
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { View, Text } from '../components/Themed';
@@ -13,8 +15,12 @@ import { View, Text } from '../components/Themed';
 export default function ChatScreen() {
 
   const [chatRooms, setChatRooms] = useState([])
-  const [flag, forceUpdate] = useState()
   const [prompt, setPrompt] = useState(false)
+  const [impChats, setImpChats] = useRecoilState(ImportantChats)
+  const [unImpChats, setUnImpChats] = useRecoilState(UnimportantChats)
+  const [workMode] = useRecoilState(workmode)
+  const [refresh, setRefresh] = useRecoilState(Refresh)
+  const [starLock, setStarLock] = useRecoilState(StarLock)
   const subscriptions = []
 
   const fetchChatRooms = (async() => {
@@ -25,12 +31,28 @@ export default function ChatScreen() {
        }))
        const chats = userData.data.getUser.chatRoomUser.items.filter((item) => (item.chatRoom.lastMessage))
        chats.sort((a,b) => (new Date(a.chatRoom.lastMessage.createdAt) < new Date(b.chatRoom.lastMessage.createdAt)))
-       setPrompt(true)
        setChatRooms(chats)
+       setImpChats(chats.filter((item) => item.isImportant))
+       setUnImpChats(chats.filter((item) => !item.isImportant))
+       setPrompt(true)
        return userData.data.getUser.chatRoomUser.items
      }
      catch(e) { console.log(e) }
   })
+
+  useEffect(() => {
+    if(prompt && !workMode){
+        setPrompt(false)
+        fetchChatRooms()
+    }
+  },[workMode])
+
+  useEffect(() => {
+    if(prompt){
+      setPrompt(false)
+      fetchChatRooms().then(() => setStarLock(true))
+    }
+  },[refresh])
 
   useEffect(() => {
     const subscribe = (async() => {
@@ -48,7 +70,7 @@ export default function ChatScreen() {
      })
    })()
    return () => { subscriptions.forEach(element => { element.unsubscribe() })}
- },[flag])
+ },[])
 
  useEffect(() => {
    var sub
@@ -59,7 +81,15 @@ export default function ChatScreen() {
        variables: { userID: userInfo.attributes.sub }
      }).subscribe({
        next: (data) => {
-         forceUpdate(data.value.data.onChatRoomUserCreatedByUserID.id)
+         subscriptions.push(API.graphql({
+           query: onMessageCreatedByChatRoomID,
+           variables: { chatRoomID: data.value.data.onChatRoomUserCreatedByUserID.chatRoom.id }
+         }).subscribe({
+           next: (data) => {
+             fetchChatRooms()
+           }
+         })
+        )
        }
      })
    })()
@@ -67,14 +97,19 @@ export default function ChatScreen() {
   },[])
 
  if(!prompt)
-   return(<ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>)
+   return(
+     <View style={styles.container}>
+       <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>
+     </View>
+   )
 
  return (
-    <View style={styles.container}>
+    <View style={[styles.container, {paddingHorizontal: chatRooms.length == 0 && prompt ? 10 : 0}]}>
       {chatRooms.length==0 && prompt && <Text style={styles.text}>{'No existing chats\nOpen contacts to start a conversation'}</Text>}
+      {workMode && chatRooms.length!==0 && unImpChats.length==0 && <Text style={styles.text}>{'All chats are marked as \'Important\'\nSwipe Right !!!'}</Text>}
       <FlatList
-        data = {chatRooms}
-        renderItem = {({item}) => <ChatListItem chatRoom={item.chatRoom} myID={item.userID}/>}
+        data = {workMode ? unImpChats : chatRooms}
+        renderItem = {({item}) => <ChatListItem chatRoomUser={item} myID={item.userID} />}
         keyExtractor = {(item => item.chatRoom.id)}
       />
       <NewMessageButton/>
@@ -96,6 +131,6 @@ const styles = StyleSheet.create({
     marginTop: '50%'
   },
   loading: {
-    top: '45%'
+    bottom: '15%'
   }
 });

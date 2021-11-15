@@ -10,7 +10,7 @@ import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
 
 const InputBox = (props) => {
 
-  const { chatRoomID, addMessage, sendImage, getEmoji, showEmo, flatlist } = props
+  const { chatRoomID, isFirst, addMessage, sendImage, getEmoji, showEmo, flatlist } = props
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
   const [myName, setMyName] = useState(null)
@@ -19,6 +19,7 @@ const InputBox = (props) => {
   const [emojiSearch, setEmojiSearch] = useState(false)
   const keyboard = useRef(null)
   const keyboardHeight = useRef(0)
+  var shouldScroll = !isFirst
 
   getEmoji(emoji)
 
@@ -63,7 +64,8 @@ const InputBox = (props) => {
         isImage: false
       })
       setMessage('')
-      flatlist.current.scrollToIndex({index: 0})
+      shouldScroll ? flatlist.current.scrollToIndex({index: 0}) :
+      shouldScroll = true
       try {
         const sentMessage = await API.graphql(graphqlOperation(createMessage, {
           input: {
