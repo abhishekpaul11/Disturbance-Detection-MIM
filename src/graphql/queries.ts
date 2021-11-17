@@ -11,6 +11,7 @@ export const batchGetMessages = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -39,6 +40,7 @@ export const batchGetMessages = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -87,6 +89,7 @@ export const getChatListItem = /* GraphQL */ `
               content
               isImage
               createdAt
+              isSpam
               user {
                 name
                 id
@@ -206,6 +209,7 @@ export const getChatRoomUser = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -273,6 +277,7 @@ export const getChatRoom = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         nextToken
@@ -285,6 +290,7 @@ export const getChatRoom = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name
@@ -330,6 +336,7 @@ export const listChatRooms = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -348,6 +355,7 @@ export const getMessage = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -376,6 +384,7 @@ export const getMessage = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -399,6 +408,7 @@ export const listMessages = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name
@@ -444,6 +454,7 @@ export const messagesByChatRoom = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name

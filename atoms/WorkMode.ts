@@ -5,6 +5,11 @@ export const workmode = atom({
   default: undefined
 })
 
+export const isImportant = atom({
+  key: 'isImportant',
+  default: false
+})
+
 export const StarLock = atom({
   key: 'StarLock',
   default: true

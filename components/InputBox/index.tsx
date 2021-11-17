@@ -51,6 +51,13 @@ const InputBox = (props) => {
     catch(e) { console.log(e) }
   }
 
+  const checkSpam = async(message) => {
+    message = message.replace(/\s+/g, '+')
+    const result = await fetch('https://imtext.herokuapp.com/predict?t='+message)
+    const ans = await result.json()
+    return ans.results.results
+  }
+
   const onSendPress = async() => {
     //send to backend
     if(message.trim() !== ""){
@@ -67,12 +74,14 @@ const InputBox = (props) => {
       shouldScroll ? flatlist.current.scrollToIndex({index: 0}) :
       shouldScroll = true
       try {
+        const spam = await checkSpam(message.trim())
         const sentMessage = await API.graphql(graphqlOperation(createMessage, {
           input: {
             content: message.trim(),
             userID: myUserID,
             chatRoomID,
-            isImage: false
+            isImage: false,
+            isSpam: spam === 1
           }
         }))
         updateChatRoomLastMessage(sentMessage.data.createMessage.id)

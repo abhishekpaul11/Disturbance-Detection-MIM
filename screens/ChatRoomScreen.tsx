@@ -12,7 +12,7 @@ import { messagesByChatRoom } from "../src/graphql/queries";
 import { updateChatRoom } from "../src/graphql/mutations";
 import { onIncomingMessage } from "../src/graphql/subscriptions";
 import BottomSheet from '@gorhom/bottom-sheet';
-import { workmode } from "../atoms/WorkMode";
+import { workmode, isImportant } from "../atoms/WorkMode";
 
 const ChatRoomScreen = () => {
   const route = useRoute()
@@ -28,6 +28,7 @@ const ChatRoomScreen = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const flatlist = useRef<FlatList>(null)
   const [globalWorkMode] = useRecoilState(workmode)
+  const [isImp, setImp] = useRecoilState(isImportant)
 
   const getEmoji = (emoji) => { emo.current = emoji }
 
@@ -37,6 +38,10 @@ const ChatRoomScreen = () => {
     else navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')
     return true;
   }
+
+  useEffect(() => {
+    setImp(route.params.isImportant)
+  })
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
@@ -83,7 +88,7 @@ const ChatRoomScreen = () => {
       }))
     })
     return () => { subscriptions.forEach((sub) => sub.unsubscribe()) }
-  })
+  },[messages])
 
   const addMyMessage = (myMessage) => {
     setMessages([myMessage, ...messages])
@@ -108,7 +113,7 @@ const ChatRoomScreen = () => {
         ref = {flatlist}
         keyboardShouldPersistTaps={'always'}
         data = {messages}
-        renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef}/>}
+        renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef} />}
         keyExtractor={(item) => item.user.name + item.createdAt}
         inverted
       />

@@ -67,7 +67,8 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
             content: key,
             userID: id,
             chatRoomID,
-            isImage: true
+            isImage: true,
+            isSpam: false
           }
         }))
         updateChatRoomLastMessage(sentMessage.data.createMessage.id)

@@ -10,7 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { TouchableRipple } from "react-native-paper";
 import Toast from 'react-native-root-toast';
 import { useRecoilState } from "recoil";
-import { ImportantChats, UnimportantChats } from "../../atoms/WorkMode";
+import { ImportantChats, UnimportantChats, workmode } from "../../atoms/WorkMode";
 
 import { API, graphqlOperation } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -24,6 +24,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   const navigation = useNavigation();
   const [importantChats, setImportantChats] = useRecoilState(ImportantChats)
   const [unImpChats, setUnImpChats] = useRecoilState(UnimportantChats)
+  const [workMode] = useRecoilState(workmode)
   const [important, toggleImp] = useState(chatRoomUser.isImportant)
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   const displayMessage = () => {
-    return chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
+    return chatRoom.lastMessage.isImage ? ' Photo' : workMode && !important && chatRoom.lastMessage.isSpam ? 'Message flagged as Spam' : chatRoom.lastMessage.content
   }
 
   const toggleImportant = () => {
@@ -112,7 +113,7 @@ const ChatListItem = (props: ChatListItemProps) => {
               <View style={styles.messageContainer}>
                 {chatRoom.lastMessage.user.id === myID && <Text style={styles.lastMessage}>You: </Text>}
                 {chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color="grey" />}
-                <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.lastMessage,{flex: 1}]}>{displayMessage()}</Text>
+                <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && chatRoom.lastMessage.isSpam ? [styles.lastMessage,{flex: 1, fontStyle: 'italic'}] : [styles.lastMessage,{flex: 1}]}>{displayMessage()}</Text>
               </View>
             </View>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Text, View, Image, Pressable, ActivityIndicator, Clipboard } from "react-native";
 import Autolink from 'react-native-autolink';
 import moment from "moment";
@@ -10,6 +10,8 @@ import { Storage } from "aws-amplify";
 import MyLinkPreview from "../MyLinkPreview/index";
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Toast from 'react-native-root-toast';
+import { workmode, isImportant } from "../../atoms/WorkMode";
+import { useRecoilState } from "recoil";
 
 export type ChatMessageProps = {
   message: Message
@@ -29,6 +31,9 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [imgBackground, setImgBackground] = useState('transparent')
   const [textWidth, setTextWidth] = useState('auto')
   const [textPadding, setTextPadding] = useState(10)
+  const [workMode] = useRecoilState(workmode)
+  const [isImp] = useRecoilState(isImportant)
+  const isOpen = useRef(true)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -71,6 +76,9 @@ const ChatMessage = (props: ChatMessageProps) => {
         })()
       }
     }
+    return () => {
+      isOpen.current = false
+    }
   },[])
 
   const displayImage = () => {
@@ -80,8 +88,10 @@ const ChatMessage = (props: ChatMessageProps) => {
 
   const renderImage = (uri) => {
     Image.getSize(uri, (width, height) => {
-      setImgWidth(height >= width ? '66%' : '74%')
-      setAspectRatio(width/height)
+      if(isOpen.current){
+        setImgWidth(height >= width ? '66%' : '74%')
+        setAspectRatio(width/height)
+      }
     });
   }
 
@@ -97,35 +107,40 @@ const ChatMessage = (props: ChatMessageProps) => {
         }]}>
         <Pressable onPress={() => openImage(message)} onLongPress={() => setOpacity(0.5)} onPressOut={() => setOpacity(1)}>
           {false && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
-          {message.isImage ?
-            <View>
-              {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
-              <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover'/>
-            </View>
+          {workMode && !isImp && message.isSpam ?
+            <Text style={[styles.message,{fontStyle: 'italic', color: '#696969'}]}>{'This message has been flagged as Spam'}</Text>
           :
             <View>
-              <LinkPreview text={message.content}
-                           containerStyle = {{display: 'none'}}
-                           onPreviewDataFetched	= {setLinkData}
-              />
-              {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage}/>}
-              <Autolink text = {message.content}
-                        style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0}]}
-                        hashtag = 'instagram'
-                        mention = 'twitter'
-                        phone = 'true'
-                        onLongPress = {(url) => {Clipboard.setString(url); Toast.show('Link copied to Clipboard',{
-                          duration: 1000,
-                          position: 100,
-                          shadow: true,
-                          animation: true,
-                          backgroundColor: '#ffffff',
-                          textColor: 'black',
-                          shadowColor: 'black',
-                          opacity: 0.9
-                        })}}
-              />
-            </View>}
+              {message.isImage ?
+                <View>
+                  {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
+                  <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover'/>
+                </View>
+              :
+                <View>
+                  <LinkPreview text={message.content}
+                               containerStyle = {{display: 'none'}}
+                               onPreviewDataFetched	= {setLinkData}
+                  />
+                  {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage}/>}
+                  <Autolink text = {message.content}
+                            style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0}]}
+                            hashtag = 'instagram'
+                            mention = 'twitter'
+                            phone = 'true'
+                            onLongPress = {(url) => {Clipboard.setString(url); Toast.show('Link copied to Clipboard',{
+                              duration: 1000,
+                              position: 100,
+                              shadow: true,
+                              animation: true,
+                              backgroundColor: '#ffffff',
+                              textColor: 'black',
+                              shadowColor: 'black',
+                              opacity: 0.9
+                            })}}
+                  />
+                </View>}
+              </View>}
           <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0}]}>{timestamp()}</Text>
         </Pressable>
       </View>

@@ -20,7 +20,7 @@ import MainTabNavigator from './MainTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
 import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto } from "@expo/vector-icons";
-import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock } from "../atoms/WorkMode";
+import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant } from "../atoms/WorkMode";
 import Toast from 'react-native-root-toast';
 import { updateChatRoomUser } from "../src/graphql/mutations";
 
@@ -43,6 +43,7 @@ function RootNavigator() {
   const [color, setColor] = useState()
   const [icon, setIcon] = useState()
   const [globalWorkMode, setGlobalWorkMode] = useRecoilState(workmode)
+  const [imp, setImp] = useRecoilState(isImportant)
   const [loaded, setLoaded] = useState(false)
   const [starLock, setStarLock] = useRecoilState(StarLock)
 
@@ -146,6 +147,7 @@ function RootNavigator() {
             if(!globalWorkMode) setRefresh(!refresh)
             setButtonColor(newColor)
             route.params.isImportant = newColor === 'gold' ? true : false
+            setImp(newColor === 'gold')
             const keyword = newColor === 'white' ? 'Unimportant' : 'Important'
             Toast.show('Contact marked as ' + keyword,{
               duration: 1000,

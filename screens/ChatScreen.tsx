@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     color: 'grey',
     fontStyle: 'italic',
     textAlign: 'center',
-    marginTop: '50%'
+    marginTop: '53%'
   },
   loading: {
     bottom: '15%'

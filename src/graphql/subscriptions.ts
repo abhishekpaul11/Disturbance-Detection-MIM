@@ -11,6 +11,7 @@ export const onMessageCreatedByChatRoomID = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -39,6 +40,7 @@ export const onMessageCreatedByChatRoomID = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -57,6 +59,7 @@ export const onIncomingMessage = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -85,6 +88,7 @@ export const onIncomingMessage = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -129,6 +133,7 @@ export const onChatRoomUserCreatedByUserID = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -270,6 +275,7 @@ export const onCreateChatRoomUser = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -315,6 +321,7 @@ export const onUpdateChatRoomUser = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -360,6 +367,7 @@ export const onDeleteChatRoomUser = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -393,6 +401,7 @@ export const onCreateChatRoom = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         nextToken
@@ -405,6 +414,7 @@ export const onCreateChatRoom = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name
@@ -450,6 +460,7 @@ export const onUpdateChatRoom = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         nextToken
@@ -462,6 +473,7 @@ export const onUpdateChatRoom = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name
@@ -507,6 +519,7 @@ export const onDeleteChatRoom = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         nextToken
@@ -519,6 +532,7 @@ export const onDeleteChatRoom = /* GraphQL */ `
         userID
         chatRoomID
         isImage
+        isSpam
         user {
           id
           name
@@ -550,6 +564,7 @@ export const onCreateMessage = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -578,6 +593,7 @@ export const onCreateMessage = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -596,6 +612,7 @@ export const onUpdateMessage = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -624,6 +641,7 @@ export const onUpdateMessage = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt
@@ -642,6 +660,7 @@ export const onDeleteMessage = /* GraphQL */ `
       userID
       chatRoomID
       isImage
+      isSpam
       user {
         id
         name
@@ -670,6 +689,7 @@ export const onDeleteMessage = /* GraphQL */ `
           userID
           chatRoomID
           isImage
+          isSpam
           updatedAt
         }
         createdAt

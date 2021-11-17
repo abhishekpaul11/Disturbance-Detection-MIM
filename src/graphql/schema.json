@@ -455,6 +455,21 @@
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
+          "name" : "isSpam",
+          "description" : null,
+          "args" : [ ],
+          "type" : {
+            "kind" : "NON_NULL",
+            "name" : null,
+            "ofType" : {
+              "kind" : "SCALAR",
+              "name" : "Boolean",
+              "ofType" : null
+            }
+          },
+          "isDeprecated" : false,
+          "deprecationReason" : null
+        }, {
           "name" : "user",
           "description" : null,
           "args" : [ ],
@@ -1690,6 +1705,15 @@
           "defaultValue" : null
         }, {
           "name" : "isImage",
+          "description" : null,
+          "type" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "ModelBooleanInput",
+            "ofType" : null
+          },
+          "defaultValue" : null
+        }, {
+          "name" : "isSpam",
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
@@ -3138,6 +3162,19 @@
             }
           },
           "defaultValue" : null
+        }, {
+          "name" : "isSpam",
+          "description" : null,
+          "type" : {
+            "kind" : "NON_NULL",
+            "name" : null,
+            "ofType" : {
+              "kind" : "SCALAR",
+              "name" : "Boolean",
+              "ofType" : null
+            }
+          },
+          "defaultValue" : null
         } ],
         "interfaces" : null,
         "enumValues" : null,
@@ -3185,6 +3222,15 @@
           "defaultValue" : null
         }, {
           "name" : "isImage",
+          "description" : null,
+          "type" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "ModelBooleanInput",
+            "ofType" : null
+          },
+          "defaultValue" : null
+        }, {
+          "name" : "isSpam",
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
@@ -3287,6 +3333,15 @@
           "defaultValue" : null
         }, {
           "name" : "isImage",
+          "description" : null,
+          "type" : {
+            "kind" : "SCALAR",
+            "name" : "Boolean",
+            "ofType" : null
+          },
+          "defaultValue" : null
+        }, {
+          "name" : "isSpam",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",
