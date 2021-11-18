@@ -6,7 +6,7 @@ import NewMessageButton from "../components/NewMessageButton";
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
 import { onMessageCreatedByChatRoomID, onChatRoomUserCreatedByUserID } from "../src/graphql/subscriptions";
-import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock } from "../atoms/WorkMode";
+import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock, ImportantMessages } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -21,6 +21,7 @@ export default function ChatScreen() {
   const [workMode] = useRecoilState(workmode)
   const [refresh, setRefresh] = useRecoilState(Refresh)
   const [starLock, setStarLock] = useRecoilState(StarLock)
+  const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const subscriptions = []
 
   const fetchChatRooms = (async() => {
@@ -32,6 +33,7 @@ export default function ChatScreen() {
        const chats = userData.data.getUser.chatRoomUser.items.filter((item) => (item.chatRoom.lastMessage))
        chats.sort((a,b) => (new Date(a.chatRoom.lastMessage.createdAt) < new Date(b.chatRoom.lastMessage.createdAt)))
        setChatRooms(chats)
+       setImpMsgs(userData.data.getUser.impMessages != undefined ? userData.data.getUser.impMessages : [])
        setImpChats(chats.filter((item) => item.isImportant))
        setUnImpChats(chats.filter((item) => !item.isImportant))
        setPrompt(true)

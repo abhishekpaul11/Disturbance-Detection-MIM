@@ -29,3 +29,8 @@ export const UnimportantChats = atom({
   key: 'UnimportantChats',
   default: []
 })
+
+export const ImportantMessages = atom({
+  key: 'ImportantMessages',
+  default: ['empty']
+})

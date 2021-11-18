@@ -4,13 +4,13 @@ import Autolink from 'react-native-autolink';
 import moment from "moment";
 import styles from "./styles";
 import { API, graphqlOperation } from "aws-amplify";
-import { deleteMessage } from "../../src/graphql/mutations";
+import { updateUser } from "../../src/graphql/mutations";
 import { useNavigation } from "@react-navigation/native";
 import { Storage } from "aws-amplify";
 import MyLinkPreview from "../MyLinkPreview/index";
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Toast from 'react-native-root-toast';
-import { workmode, isImportant } from "../../atoms/WorkMode";
+import { workmode, isImportant, ImportantMessages } from "../../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 
 export type ChatMessageProps = {
@@ -19,7 +19,7 @@ export type ChatMessageProps = {
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
-  const { message, id, bottomSheetRef } = props
+  const { message, id, bottomSheetRef, impName } = props
   const [uri, setUri] = useState('toBeFetched')
   const [loading, setLoading] = useState(true)
   const [opacity, setOpacity] = useState(1)
@@ -34,6 +34,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [workMode] = useRecoilState(workmode)
   const [isImp] = useRecoilState(isImportant)
   const isOpen = useRef(true)
+  const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
+  const [msgImp, setMsgImp] = useState(impMsgs.includes(message.id))
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -47,13 +49,21 @@ const ChatMessage = (props: ChatMessageProps) => {
     return ts
   }
 
-  const openImage = async(message) => {
+  const handleMsg = async(message) => {
     if(!message.isImage){
-      await API.graphql(graphqlOperation(deleteMessage,{
-         input: {
-           id: message.id
-         }
-      }))
+      if (!(workMode && !isImp && !msgImp && message.isSpam)){
+        Clipboard.setString(message.content)
+        Toast.show('Message copied to Clipboard',{
+          duration: 1000,
+          position: 100,
+          shadow: true,
+          animation: true,
+          backgroundColor: '#ffffff',
+          textColor: 'black',
+          shadowColor: 'black',
+          opacity: 0.9
+        })
+      }
     }
     else if(!loading){
       bottomSheetRef?.current?.close()
@@ -95,6 +105,37 @@ const ChatMessage = (props: ChatMessageProps) => {
     });
   }
 
+  const toggleImportant = async(prevState) => {
+    if (!(workMode && !isImp && !msgImp && message.isSpam)){
+      setOpacity(0.5)
+      if(!impName){
+        setTimeout(() => {
+          setMsgImp(!msgImp)
+          setOpacity(1)
+        }, 500)
+      }
+      const keyword = prevState ? 'Unimportant' : 'Important'
+      Toast.show('Message marked as '+keyword,{
+        duration: 1000,
+        position: 100,
+        shadow: true,
+        animation: true,
+        backgroundColor: '#ffffff',
+        textColor: 'black',
+        shadowColor: 'black',
+        opacity: 0.9
+      })
+      const newImpMsgs = !prevState ? [...impMsgs, message.id] : impMsgs.filter((msg) => msg !== message.id)
+      setImpMsgs(newImpMsgs)
+      await API.graphql(graphqlOperation(updateUser, {
+        input: {
+          id,
+          impMessages: newImpMsgs
+        }
+      }))
+    }
+  }
+
   return (
     <View style = {styles.container}>
       <View opacity={opacity} width={message.isImage ? imgWidth : textWidth} style = {
@@ -103,11 +144,13 @@ const ChatMessage = (props: ChatMessageProps) => {
           marginRight: isMyMessage() ? 5 : 50,
           marginLeft: isMyMessage() ? 50 : 5,
           alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
-          padding: message.isImage ? 5 : textPadding
+          padding: message.isImage ? 5 : textPadding,
+          borderWidth: msgImp ? 2 : 0,
+          borderColor: '#75228f'
         }]}>
-        <Pressable onPress={() => openImage(message)} onLongPress={() => setOpacity(0.5)} onPressOut={() => setOpacity(1)}>
-          {false && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
-          {workMode && !isImp && message.isSpam ?
+        <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
+          {impName && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
+          {workMode && !isImp && !msgImp && message.isSpam ?
             <Text style={[styles.message,{fontStyle: 'italic', color: '#696969'}]}>{'This message has been flagged as Spam'}</Text>
           :
             <View>

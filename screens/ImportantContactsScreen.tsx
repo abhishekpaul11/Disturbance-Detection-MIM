@@ -48,5 +48,8 @@ const styles = StyleSheet.create({
     color: 'grey',
     fontStyle: 'italic',
     textAlign: 'center'
+  },
+  loading: {
+    bottom: '15%'
   }
 });

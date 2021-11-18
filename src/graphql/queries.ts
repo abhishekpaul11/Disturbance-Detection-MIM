@@ -77,6 +77,7 @@ export const getUser = /* GraphQL */ `
 export const getChatListItem = /* GraphQL */ `
   query GetUser($id: ID!) {
     getUser(id: $id) {
+      impMessages
       chatRoomUser {
         items {
           id
