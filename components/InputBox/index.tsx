@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { TextInput, View, TouchableOpacity, Keyboard } from "react-native";
+import { TextInput, View, TouchableOpacity, Keyboard, AsyncStorage } from "react-native";
 import styles from "./styles";
 import moment from "moment";
 import { MaterialCommunityIcons, FontAwesome5, Entypo, Ionicons, MaterialIcons, Octicons, AntDesign } from "@expo/vector-icons";
 import EmojiSelector, { Categories} from 'react-native-emoji-selector'
+import { Emoji } from "../../atoms/HelperStates";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
+import { SentMessages } from "../../atoms/WorkMode";
+import { useRecoilState } from "recoil";
 
 const InputBox = (props) => {
 
@@ -19,6 +22,9 @@ const InputBox = (props) => {
   const [emojiSearch, setEmojiSearch] = useState(false)
   const keyboard = useRef(null)
   const keyboardHeight = useRef(0)
+  const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
+  const [counter, setCounter] = useState(1)
+  const [emojiCheck] = useRecoilState(Emoji)
   var shouldScroll = !isFirst
 
   getEmoji(emoji)
@@ -51,14 +57,19 @@ const InputBox = (props) => {
     catch(e) { console.log(e) }
   }
 
-  const checkSpam = async(message) => {
-    message = message.replace(/\s+/g, '+')
-    const result = await fetch('https://imtext.herokuapp.com/predict?t='+message)
-    const ans = await result.json()
-    return ans.results.results
+  const checkSpam = (message) => {
+    return new Promise(async(resolve, reject) => {
+      message = message.replace(/\s+/g, '+')
+      try{
+        const result = await fetch('https://imtext.herokuapp.com/predict?t='+message)
+        const ans = await result.json()
+        resolve(ans.results.results)
+      }
+      catch(e) { resolve(0) }
+    })
   }
 
-  const onSendPress = async() => {
+  const onSendPress = () => {
     //send to backend
     if(message.trim() !== ""){
       addMessage({
@@ -68,23 +79,31 @@ const InputBox = (props) => {
         },
         content: message.trim(),
         createdAt: moment().toISOString(),
-        isImage: false
+        isImage: false,
+        index: counter
       })
       setMessage('')
       shouldScroll ? flatlist.current.scrollToIndex({index: 0}) :
       shouldScroll = true
       try {
-        const spam = await checkSpam(message.trim())
-        const sentMessage = await API.graphql(graphqlOperation(createMessage, {
-          input: {
-            content: message.trim(),
-            userID: myUserID,
-            chatRoomID,
-            isImage: false,
-            isSpam: spam === 1
-          }
-        }))
-        updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+        checkSpam(message.trim()).then(async(result) => {
+          const spam = result
+          const sentMessage = await API.graphql(graphqlOperation(createMessage, {
+            input: {
+              content: message.trim(),
+              userID: myUserID,
+              chatRoomID,
+              isImage: false,
+              isSpam: spam === 1
+            }
+          }))
+          updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+          const newObj = Object.assign({}, sentMsgs)
+          newObj[counter] = sentMessage.data.createMessage.id
+          setSentMsgs(newObj)
+          setCounter(counter+1)
+        })
+        .catch(err => { console.log(err) })
       }
       catch(e) { console.log(e) }
     }
@@ -146,6 +165,11 @@ const InputBox = (props) => {
     showEmoji(false)
   }
 
+  const handleEmoji = (emoji) => {
+    if(!emojiCheck) AsyncStorage.setItem('emoji', 'true')
+    setMessage(message+emoji)
+  }
+
   return (
     <View>
       <View style={styles.container}>
@@ -192,8 +216,8 @@ const InputBox = (props) => {
       </View>
       {emoji && <View style={[styles.emojiContainer, { height: emojiHeight }]}>
         <EmojiSelector
-          category = {Categories.history}
-          onEmojiSelected={(emoji) => setMessage(message+emoji)}
+          category = {emojiCheck ? Categories.history : Categories.emotion}
+          onEmojiSelected={(emoji) => handleEmoji(emoji)}
           theme = {emojiSearch ? 'transparent' : '#75228f'}
           showHistory = {true}
           columns = {10}

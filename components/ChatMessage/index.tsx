@@ -10,8 +10,9 @@ import { Storage } from "aws-amplify";
 import MyLinkPreview from "../MyLinkPreview/index";
 import { LinkPreview } from '@flyerhq/react-native-link-preview'
 import Toast from 'react-native-root-toast';
-import { workmode, isImportant, ImportantMessages } from "../../atoms/WorkMode";
+import { workmode, isImportant, ImportantMessages, SentMessages, ImpLock } from "../../atoms/WorkMode";
 import { useRecoilState } from "recoil";
+import SpamMessage from "../SpamMessage";
 
 export type ChatMessageProps = {
   message: Message
@@ -19,7 +20,7 @@ export type ChatMessageProps = {
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
-  const { message, id, bottomSheetRef, impName } = props
+  const { message, id, bottomSheetRef, removeMsg, toggleImpMsgs } = props
   const [uri, setUri] = useState('toBeFetched')
   const [loading, setLoading] = useState(true)
   const [opacity, setOpacity] = useState(1)
@@ -36,6 +37,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   const isOpen = useRef(true)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [msgImp, setMsgImp] = useState(impMsgs.includes(message.id))
+  const [sentMsgs] = useRecoilState(SentMessages)
+  const [impLock, setImpLock] = useRecoilState(ImpLock)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -49,20 +52,24 @@ const ChatMessage = (props: ChatMessageProps) => {
     return ts
   }
 
+  const displayToast = (message) => {
+    Toast.show(message,{
+      duration: 1000,
+      position: 100,
+      shadow: true,
+      animation: true,
+      backgroundColor: '#ffffff',
+      textColor: 'black',
+      shadowColor: 'black',
+      opacity: 0.9
+    })
+  }
+
   const handleMsg = async(message) => {
     if(!message.isImage){
       if (!(workMode && !isImp && !msgImp && message.isSpam)){
         Clipboard.setString(message.content)
-        Toast.show('Message copied to Clipboard',{
-          duration: 1000,
-          position: 100,
-          shadow: true,
-          animation: true,
-          backgroundColor: '#ffffff',
-          textColor: 'black',
-          shadowColor: 'black',
-          opacity: 0.9
-        })
+        displayToast('Message copied to Clipboard')
       }
     }
     else if(!loading){
@@ -105,35 +112,65 @@ const ChatMessage = (props: ChatMessageProps) => {
     });
   }
 
-  const toggleImportant = async(prevState) => {
-    if (!(workMode && !isImp && !msgImp && message.isSpam)){
-      setOpacity(0.5)
-      if(!impName){
-        setTimeout(() => {
-          setMsgImp(!msgImp)
-          setOpacity(1)
-        }, 500)
-      }
-      const keyword = prevState ? 'Unimportant' : 'Important'
-      Toast.show('Message marked as '+keyword,{
-        duration: 1000,
-        position: 100,
-        shadow: true,
-        animation: true,
-        backgroundColor: '#ffffff',
-        textColor: 'black',
-        shadowColor: 'black',
-        opacity: 0.9
-      })
-      const newImpMsgs = !prevState ? [...impMsgs, message.id] : impMsgs.filter((msg) => msg !== message.id)
-      setImpMsgs(newImpMsgs)
-      await API.graphql(graphqlOperation(updateUser, {
-        input: {
-          id,
-          impMessages: newImpMsgs
-        }
-      }))
+  useEffect(() => {
+    message.id = message.id == undefined ? sentMsgs[message.index] : message.id
+  },[sentMsgs])
+
+  const toggleImportant = (prevState) => {
+    setImpLock(true)
+    setOpacity(0.5)
+    message.id == undefined ? displayToast('Please Wait') : ''
+    message.index != undefined ? getID(prevState) : toggleHelper(prevState)
+  }
+
+  const getID = (prevState) => {
+    if(message.id != undefined){
+      toggleImpMsgs(message.id, prevState)
+      setTimeout(() => {
+        setMsgImp(!msgImp)
+        setOpacity(1)
+        const keyword = prevState ? 'Unimportant' : 'Important'
+        displayToast('Message marked as '+keyword)
+        setImpLock(false)
+      }, 500)
     }
+    else {
+      setTimeout(() => {
+        getID(prevState)
+      }, 500);
+    }
+  }
+
+  const toggleHelper = async(prevState) => {
+    if(!removeMsg){
+      setTimeout(() => {
+        setMsgImp(!msgImp)
+        setOpacity(1)
+        const keyword = prevState ? 'Unimportant' : 'Important'
+        displayToast('Message marked as '+keyword)
+        setImpLock(false)
+      }, 500)
+    }
+    else{
+      removeMsg(message.id)
+      setTimeout(() => {
+        displayToast('Message marked as Unimportant')
+      }, 500);
+    }
+    const newImpMsgs = !prevState ? [...impMsgs, message.id] : impMsgs.filter((msg) => msg !== message.id)
+    setImpMsgs(newImpMsgs)
+    await API.graphql(graphqlOperation(updateUser, {
+      input: {
+        id,
+        impMessages: newImpMsgs
+      }
+    }))
+  }
+
+  if(workMode && !isImp && !msgImp && message.isSpam){
+    return(
+      <SpamMessage isMyMessage={isMyMessage} timestamp={timestamp} name={message.user.name}/>
+    )
   }
 
   return (
@@ -149,41 +186,29 @@ const ChatMessage = (props: ChatMessageProps) => {
           borderColor: '#75228f'
         }]}>
         <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
-          {impName && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
-          {workMode && !isImp && !msgImp && message.isSpam ?
-            <Text style={[styles.message,{fontStyle: 'italic', color: '#696969'}]}>{'This message has been flagged as Spam'}</Text>
-          :
-            <View>
-              {message.isImage ?
-                <View>
-                  {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
-                  <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover'/>
-                </View>
-              :
-                <View>
-                  <LinkPreview text={message.content}
-                               containerStyle = {{display: 'none'}}
-                               onPreviewDataFetched	= {setLinkData}
-                  />
-                  {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage}/>}
-                  <Autolink text = {message.content}
-                            style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0}]}
-                            hashtag = 'instagram'
-                            mention = 'twitter'
-                            phone = 'true'
-                            onLongPress = {(url) => {Clipboard.setString(url); Toast.show('Link copied to Clipboard',{
-                              duration: 1000,
-                              position: 100,
-                              shadow: true,
-                              animation: true,
-                              backgroundColor: '#ffffff',
-                              textColor: 'black',
-                              shadowColor: 'black',
-                              opacity: 0.9
-                            })}}
-                  />
-                </View>}
+          {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
+          <View>
+            {message.isImage ?
+              <View>
+                {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
+                <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover'/>
+              </View>
+            :
+              <View>
+                <LinkPreview text={message.content}
+                             containerStyle = {{display: 'none'}}
+                             onPreviewDataFetched	= {setLinkData}
+                />
+                {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage} imp={msgImp} toggleImportant={toggleImportant}/>}
+                <Autolink text = {message.content}
+                          style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0}]}
+                          hashtag = 'instagram'
+                          mention = 'twitter'
+                          phone = 'true'
+                          onLongPress = {(url) => {Clipboard.setString(url); displayToast('Link copied to Clipboard')}}
+                />
               </View>}
+          </View>
           <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0}]}>{timestamp()}</Text>
         </Pressable>
       </View>

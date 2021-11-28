@@ -9,10 +9,10 @@ import { useRecoilState } from "recoil";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { messagesByChatRoom } from "../src/graphql/queries";
-import { updateChatRoom } from "../src/graphql/mutations";
+import { updateChatRoom, updateUser } from "../src/graphql/mutations";
 import { onIncomingMessage } from "../src/graphql/subscriptions";
 import BottomSheet from '@gorhom/bottom-sheet';
-import { workmode, isImportant } from "../atoms/WorkMode";
+import { workmode, isImportant, SentMessages, ImportantMessages, ImpLock } from "../atoms/WorkMode";
 
 const ChatRoomScreen = () => {
   const route = useRoute()
@@ -29,19 +29,36 @@ const ChatRoomScreen = () => {
   const flatlist = useRef<FlatList>(null)
   const [globalWorkMode] = useRecoilState(workmode)
   const [isImp, setImp] = useRecoilState(isImportant)
+  const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
+  const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
+  const [impLock] = useRecoilState(ImpLock)
 
   const getEmoji = (emoji) => { emo.current = emoji }
 
   function handleBackButtonClick() {
     bottomSheetRef?.current?.close()
     if(emo.current) hideEmo(!showEmo)
-    else navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')
+    else{
+      if(!impLock){
+        if(route.params.recentImpMsgs.length > 0){
+          setImpMsgs(impMsgs.concat(route.params.recentImpMsgs))
+          API.graphql(graphqlOperation(updateUser, {
+            input: {
+              id: route.params.userID,
+              impMessages: impMsgs.concat(route.params.recentImpMsgs)
+            }
+          }))
+        }
+        navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')
+        setSentMsgs({})
+      }
+    }
     return true;
   }
 
   useEffect(() => {
     setImp(route.params.isImportant)
-  })
+  },[])
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
@@ -107,13 +124,18 @@ const ChatRoomScreen = () => {
     bottomSheetRef?.current?.snapToIndex(0)
   }
 
+  const toggleImpMsgs = (id) => {
+    if(route.params.recentImpMsgs.includes(id)) route.params.recentImpMsgs = route.params.recentImpMsgs.filter((msg) => msg !== id)
+    else route.params.recentImpMsgs.push(id)
+  }
+
   return (
     <ImageBackground style={styles.background} source = {background}>
       <FlatList
         ref = {flatlist}
         keyboardShouldPersistTaps={'always'}
         data = {messages}
-        renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef} />}
+        renderItem={({item}) => <ChatMessage message={item} id={myID} bottomSheetRef={bottomSheetRef} toggleImpMsgs={toggleImpMsgs}/>}
         keyExtractor={(item) => item.user.name + item.createdAt}
         inverted
       />

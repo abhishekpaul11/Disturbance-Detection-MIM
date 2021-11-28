@@ -20,9 +20,10 @@ import MainTabNavigator from './MainTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
 import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto } from "@expo/vector-icons";
-import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant } from "../atoms/WorkMode";
+import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant, SentMessages, ImportantMessages, ImpLock} from "../atoms/WorkMode";
+import { Emoji } from "../atoms/HelperStates";
 import Toast from 'react-native-root-toast';
-import { updateChatRoomUser } from "../src/graphql/mutations";
+import { updateChatRoomUser, updateUser } from "../src/graphql/mutations";
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -46,6 +47,10 @@ function RootNavigator() {
   const [imp, setImp] = useRecoilState(isImportant)
   const [loaded, setLoaded] = useState(false)
   const [starLock, setStarLock] = useRecoilState(StarLock)
+  const [, setSentMsgs] = useRecoilState(SentMessages)
+  const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
+  const [impLock] = useRecoilState(ImpLock)
+  const [emoji, setEmoji] = useRecoilState(Emoji)
 
   AsyncStorage.getItem('workmode').then(data => {
     const savedColor = data === 'ON' ? 'orange' : 'lightgreen'
@@ -55,6 +60,10 @@ function RootNavigator() {
     setIcon(savedIcon)
     setGlobalWorkMode(savedMode)
     setLoaded(true)
+  });
+
+  AsyncStorage.getItem('emoji').then(data => {
+    if(data === 'true') setEmoji(true)
   });
 
   const toggleWorkmode = () => {
@@ -89,7 +98,7 @@ function RootNavigator() {
     }}>
     <Stack.Screen name="Root" component={MainTabNavigator}
       options =  {{
-        title: 'Any Cool Name',
+        title: 'Deep Chat',
         headerRight: () => (
           <View style={styles.rootHeader}>
             {loaded && <TouchableRipple onPress={toggleWorkmode} rippleColor={'#cccccc42'} >
@@ -112,7 +121,22 @@ function RootNavigator() {
           maxWidth: 195,
         },
         headerLeft: () => (
-          <HeaderBackButton tintColor={'white'} onPress={() => navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')}/>
+          <HeaderBackButton tintColor={'white'} onPress={() => {
+              if(!impLock){
+                if(route.params.recentImpMsgs.length > 0){
+                  setImpMsgs(impMsgs.concat(route.params.recentImpMsgs))
+                  API.graphql(graphqlOperation(updateUser, {
+                    input: {
+                      id: route.params.userID,
+                      impMessages: impMsgs.concat(route.params.recentImpMsgs)
+                    }
+                  }))
+                }
+                navigation.navigate(!globalWorkMode ? 'Chats' : route.params.isImportant ? 'ImportantContacts' : 'Chats')
+                setSentMsgs({})
+              }
+            }}
+          />
         ),
         headerRight: () => {
           const [buttonColor, setButtonColor] = useState(route.params.isImportant ? 'gold' : 'white')

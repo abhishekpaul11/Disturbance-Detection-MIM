@@ -1,13 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, Dimensions, Linking } from "react-native";
 import { TouchableRipple } from "react-native-paper";
 import styles from "./styles";
 
 const MyLinkPreview = (props) => {
-  const { linkData, setTextWidth, isMyMessage, setTextPadding } = props
+  const { linkData, setTextWidth, isMyMessage, setTextPadding, imp, toggleImportant } = props
   const windowWidth = Dimensions.get('window').width;
   linkData.description = linkData.description ? linkData.description : 'Link preview'
   linkData.title = linkData.title ? linkData.title : 'Click here to visit the link.'
+  const [offset, setOffset] = useState(imp ? 4 : 0)
+
+  useEffect(() => {
+    setOffset(imp ? 4 : 0)
+  },[imp])
 
   useEffect(() => {
     if(linkData.image && !isMinImage()){
@@ -39,12 +44,12 @@ const MyLinkPreview = (props) => {
   }
 
   return (
-    <TouchableRipple onPress={() => Linking.openURL(linkData.link)} rippleColor={'#cccccc42'} style={styles.container}>
+    <TouchableRipple onPress={() => Linking.openURL(linkData.link)} onLongPress={() => toggleImportant(imp)} rippleColor={'#cccccc42'} style={styles.container}>
       <View>
         {linkData.image && !isMinImage() && <Image
                 source={{uri: linkData.image.url}}
                 aspectRatio={isVerticalImage() ? undefined : getAspectRatio()}
-                style={[styles.maxImage, {borderWidth: isMyMessage() ? 0 : 0.5, width: isVerticalImage() ? 260/412 * windowWidth : 290/412 * windowWidth, height: isVerticalImage() ? 290/412 * windowWidth : undefined}]}/>}
+                style={[styles.maxImage, {borderWidth: isMyMessage() ? 0 : 0.5, width: isVerticalImage() ? 260/412 * windowWidth - offset : 290/412 * windowWidth - offset, height: isVerticalImage() ? 290/412 * windowWidth : undefined}]}/>}
         <View style={[styles.lowerContainer, {height: linkData.image ? isMinImage() ? 80 : undefined : 80}]}>
           {linkData.image && isMinImage() && <Image
                 source={{uri: linkData.image.url}}

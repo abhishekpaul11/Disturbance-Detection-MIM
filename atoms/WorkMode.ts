@@ -34,3 +34,13 @@ export const ImportantMessages = atom({
   key: 'ImportantMessages',
   default: ['empty']
 })
+
+export const SentMessages = atom({
+  key: 'SentMessages',
+  default: {}
+})
+
+export const ImpLock = atom({
+  key: 'ImpLock',
+  default: false
+})

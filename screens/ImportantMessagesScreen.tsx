@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { ImportantMessages, workmode } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
@@ -14,6 +14,7 @@ export default function ImportantMessagesScreen() {
   const [myID, setMyID] = useState(null)
   const [messages, setMessages] = useState(['empty'])
   const [workMode] = useRecoilState(workmode)
+  const active = useRef({current: true})
 
   useEffect(() => {
     const getID = (async() => {
@@ -23,6 +24,10 @@ export default function ImportantMessagesScreen() {
   },[])
 
   useEffect(() => {
+    if(!active.current){
+      active.current = true
+      return
+    }
     if(importantMessages.length == 0 || importantMessages[0] !== 'empty'){
       if(importantMessages.length > 0){
         const getMessages = (async() => {
@@ -40,6 +45,13 @@ export default function ImportantMessagesScreen() {
   const renderSeparator = () => (
     <View style={styles.separator}/>
   );
+
+  const removeMsg = (id) => {
+    active.current = false
+    setTimeout(() => {
+      setMessages(messages.filter(msg => msg.id !== id))
+    }, 500);
+  }
 
   if(!workMode)
     return (
@@ -60,7 +72,7 @@ export default function ImportantMessagesScreen() {
       {messages.length==0 && <Text style={[styles.text, {marginTop: '55%'}]}>{'No messages were marked as \'Important\''}</Text>}
       <FlatList
         data = {myID!==null ? messages : []}
-        renderItem = {({item}) => <ChatMessage message={item} id={myID} impName={true}/>}
+        renderItem = {({item}) => <ChatMessage message={item} id={myID} removeMsg={removeMsg}/>}
         keyExtractor={(item) => item.user.name + item.createdAt}
         ItemSeparatorComponent={renderSeparator}
       />

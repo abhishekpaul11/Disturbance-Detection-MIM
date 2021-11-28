@@ -19,13 +19,15 @@ const ContactListItem = (props: ContactListItemProps) => {
   const navigation = useNavigation();
   var flag = true
 
-  const openChat = (chatRoomID, users, name, isImportant, chatRoomUser) => {
+  const openChat = (chatRoomID, users, name, isImportant, chatRoomUser, id) => {
     navigation.navigate('ChatRoom',{
       id: chatRoomID,
       users,
       name,
       isImportant,
-      chatRoomUser
+      chatRoomUser,
+      recentImpMsgs: [],
+      userID: id
     })
   }
 
@@ -86,13 +88,13 @@ const ContactListItem = (props: ContactListItemProps) => {
                 }
               }))
             ])
-            openChat(newChatRoom.id, [{user}], user.name, false, myChatRoomUser.data.createChatRoomUser)
+            openChat(newChatRoom.id, [{user}], user.name, false, myChatRoomUser.data.createChatRoomUser, userInfo.attributes.sub)
           }
           catch(e) { console.log(e) }
       }
       else {
         const myContact = contacts.find((contact) => (contact.userID === userInfo.attributes.sub && contact.chatRoomID === currentContact.chatRoomID))
-        openChat(currentContact.chatRoom.id, [{user}], user.name, myContact.isImportant, myContact)
+        openChat(currentContact.chatRoom.id, [{user}], user.name, myContact.isImportant, myContact, userInfo.attributes.sub)
       }
       flag = true
     }
