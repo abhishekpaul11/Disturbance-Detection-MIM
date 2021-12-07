@@ -37,7 +37,7 @@ export const ImportantMessages = atom({
 
 export const SentMessages = atom({
   key: 'SentMessages',
-  default: {}
+  default: {data: 'empty'}
 })
 
 export const ImpLock = atom({

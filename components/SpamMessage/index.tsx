@@ -13,7 +13,7 @@ const SpamMessage = ({ isMyMessage, timestamp, name }) => {
           alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
         }]}>
         {false && !isMyMessage() && <Text style={styles.name}>{name}</Text>}
-        <Text style={styles.message}>{'This message has been flagged as Spam'}</Text>
+        <Text style={styles.message}>{'Message flagged as Distracting'}</Text>
         <Text style = {styles.time}>{timestamp()}</Text>
       </View>
     </View>

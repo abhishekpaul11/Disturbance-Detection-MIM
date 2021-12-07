@@ -31,9 +31,13 @@ const ChatRoomScreen = () => {
   const [isImp, setImp] = useRecoilState(isImportant)
   const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
-  const [impLock] = useRecoilState(ImpLock)
+  const [impLock, setImpLock] = useRecoilState(ImpLock)
 
   const getEmoji = (emoji) => { emo.current = emoji }
+
+  useEffect(()=> {
+    setSentMsgs({data: 'empty'})
+  },[])
 
   function handleBackButtonClick() {
     bottomSheetRef?.current?.close()
@@ -109,6 +113,7 @@ const ChatRoomScreen = () => {
 
   const addMyMessage = (myMessage) => {
     setMessages([myMessage, ...messages])
+    setImpLock(false)
   }
 
   useEffect(() => {

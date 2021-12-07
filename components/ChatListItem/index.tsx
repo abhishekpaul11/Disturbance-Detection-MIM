@@ -57,7 +57,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   const displayMessage = () => {
-    return chatRoom.lastMessage.isImage ? ' Photo' : workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) &&chatRoom.lastMessage.isSpam ? 'Message flagged as Spam' : chatRoom.lastMessage.content
+    return workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? 'Message flagged as Distracting' : chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
   }
 
   const toggleImportant = () => {
@@ -113,7 +113,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
               <View style={styles.messageContainer}>
                 {chatRoom.lastMessage.user.id === myID && <Text style={styles.lastMessage}>You: </Text>}
-                {chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color="grey" />}
+                {!(workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam) && chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color="grey" />}
                 <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? [styles.lastMessage,{flex: 1, fontStyle: 'italic'}] : [styles.lastMessage,{flex: 1}]}>{displayMessage()}</Text>
               </View>
             </View>

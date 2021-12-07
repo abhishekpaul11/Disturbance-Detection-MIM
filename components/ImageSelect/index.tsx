@@ -42,6 +42,24 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
     handleImagePicked(result);
   };
 
+  const checkSpam = (uri) => {
+    return new Promise((resolve) => {
+      Storage.get(uri)
+        .then((url) => { //ML part
+           try{
+             fetch('https://tinyurl.com/api-create.php?url='+url).then(response => response.text())
+                .then(async(shortURL) => {
+                  const result = await fetch('https://im-image.herokuapp.com/predict?t='+shortURL)
+                  const ans = await result.json()
+                  resolve(ans.results.results)
+                })
+            }
+            catch(e) { console.log(e); resolve(0)}
+        })
+        .catch((err) => {console.log(err); resolve(0)})
+    })
+  };
+
   const handleImagePicked = async(result) => {
     if (!result.cancelled) {
       setSnapLock(false)
@@ -60,18 +78,21 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
         createdAt: moment().toISOString(),
         isImage: true
       })
-      //Presigned URL to be downloaded
+      //Spam to be checked
       try {
-        const sentMessage = await API.graphql(graphqlOperation(createMessage, {
-          input: {
-            content: key,
-            userID: id,
-            chatRoomID,
-            isImage: true,
-            isSpam: false
-          }
-        }))
-        updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+        checkSpam(key).then(async(result) => {
+          const sentMessage = await API.graphql(graphqlOperation(createMessage, {
+            input: {
+              content: key,
+              userID: id,
+              chatRoomID,
+              isImage: true,
+              isSpam: result === 1
+            }
+          }))
+          updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+        })
+        .catch(err => {console.log(err)})
       }
       catch(e) { console.log(e) }
     }
@@ -116,12 +137,6 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
     const response = await fetch(uri);
     const blob = await response.blob();
     return blob;
-  };
-
-  const downloadImage = (uri) => {
-    Storage.get(uri)
-      .then() //ML part to be added
-      .catch((err) => console.log(err));
   };
 
   return(

@@ -8,7 +8,7 @@ import { Emoji } from "../../atoms/HelperStates";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
-import { SentMessages } from "../../atoms/WorkMode";
+import { SentMessages, ImpLock } from "../../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 
 const InputBox = (props) => {
@@ -25,6 +25,7 @@ const InputBox = (props) => {
   const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
   const [counter, setCounter] = useState(1)
   const [emojiCheck] = useRecoilState(Emoji)
+  const [impLock, setImpLock] = useRecoilState(ImpLock)
   var shouldScroll = !isFirst
 
   getEmoji(emoji)
@@ -61,17 +62,36 @@ const InputBox = (props) => {
     return new Promise(async(resolve, reject) => {
       message = message.replace(/\s+/g, '+')
       try{
-        const result = await fetch('https://imtext.herokuapp.com/predict?t='+message)
-        const ans = await result.json()
-        resolve(ans.results.results)
+        var words = message.split('+')
+        words = words.filter(word => (word.includes('youtu.be') || word.includes('youtube.com')))
+        if(words.length == 0){
+          const result = await fetch('https://imtext.herokuapp.com/predict?t='+message)
+          const ans = await result.json()
+          resolve(ans.results.results)
+        }
+        else{
+          const promises = []
+          words.forEach(word => {
+            const code = word.substring(word.includes('youtu.be') ? word.lastIndexOf('/')+1 : word.lastIndexOf('=')+1)
+            promises.push(new Promise(async(resolve) => {
+              const result = await fetch('https://im-youtube.herokuapp.com/predict?t='+code)
+              const ans = await result.json()
+              resolve(ans.results.results)
+            }))
+          })
+          Promise.all(promises).then(results => {
+            resolve(results.some(result => result == 1) ? 1 : 0)
+          })
+        }
       }
-      catch(e) { resolve(0) }
+      catch(e) { console.log(e);resolve(0) }
     })
   }
 
   const onSendPress = () => {
     //send to backend
     if(message.trim() !== ""){
+      setImpLock(true)
       addMessage({
         user: {
           name: myName.charAt(0).toUpperCase() + myName.slice(1),
@@ -98,10 +118,12 @@ const InputBox = (props) => {
             }
           }))
           updateChatRoomLastMessage(sentMessage.data.createMessage.id)
-          const newObj = Object.assign({}, sentMsgs)
-          newObj[counter] = sentMessage.data.createMessage.id
-          setSentMsgs(newObj)
-          setCounter(counter+1)
+          if(Object.keys(sentMsgs).length > 0){
+            const newObj = Object.assign({}, sentMsgs)
+            newObj[counter] = sentMessage.data.createMessage.id
+            setSentMsgs(newObj)
+            setCounter(counter+1)
+          }
         })
         .catch(err => { console.log(err) })
       }

@@ -39,6 +39,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [msgImp, setMsgImp] = useState(impMsgs.includes(message.id))
   const [sentMsgs] = useRecoilState(SentMessages)
   const [impLock, setImpLock] = useRecoilState(ImpLock)
+  const [visible, setVisible] = useState(false)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -167,9 +168,21 @@ const ChatMessage = (props: ChatMessageProps) => {
     }))
   }
 
-  if(workMode && !isImp && !msgImp && message.isSpam){
+  const show = () => {
+    if(!visible){
+      setVisible(true)
+      displayToast('Message Unmasked Temporarily')
+      setTimeout(() => {
+        setVisible(false)
+      }, 5000);
+    }
+  }
+
+  if(workMode && !isImp && !msgImp && message.isSpam && !visible){
     return(
-      <SpamMessage isMyMessage={isMyMessage} timestamp={timestamp} name={message.user.name}/>
+      <Pressable onLongPress={show}>
+        <SpamMessage isMyMessage={isMyMessage} timestamp={timestamp} name={message.user.name}/>
+      </Pressable>
     )
   }
 
