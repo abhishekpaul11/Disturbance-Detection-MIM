@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import Colors from "../../constants/Colors";
 
 const styles = StyleSheet.create({
   container: {
@@ -15,7 +14,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     flex: 1,
     borderWidth: 1,
-    borderColor: Colors.light.tint,
     alignItems: 'center'
   },
   textInput: {
@@ -25,7 +23,6 @@ const styles = StyleSheet.create({
     maxHeight: 110
   },
   buttonContainer: {
-    backgroundColor: Colors['light'].tint,
     borderRadius: 50,
     height: 50,
     width: 50,
@@ -34,9 +31,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 5
-  },
-  emojiContainer: {
-    backgroundColor: '#ffffffaa'
   }
 })
 

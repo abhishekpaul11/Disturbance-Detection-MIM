@@ -1,7 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
-import Colors from "../../constants/Colors";
-
-const windowHeight = Dimensions.get('window').height;
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -11,7 +8,6 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   name: {
-    color: Colors['light'].tint,
     fontWeight: 'bold',
     marginBottom: 2
   },
@@ -20,13 +16,11 @@ const styles = StyleSheet.create({
   },
   time: {
     alignSelf: 'flex-end',
-    color: 'gray',
     fontSize: 13
   },
   image: {
     minWidth: '100%',
-    borderRadius: 8,
-    maxHeight: 350/823 * windowHeight
+    borderRadius: 8
   },
   activityIndicator: {
     position: 'absolute',

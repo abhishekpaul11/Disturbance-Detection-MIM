@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
+import Colors from "../constants/Colors";
+import useColorScheme from '../hooks/useColorScheme';
 
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
 import { onMessageCreatedByChatRoomID, onChatRoomUserCreatedByUserID } from "../src/graphql/subscriptions";
 import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock, ImportantMessages } from "../atoms/WorkMode";
+import { UserUpdate } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
 
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -14,6 +17,7 @@ import { View, Text } from '../components/Themed';
 
 export default function ChatScreen() {
 
+  const colorScheme = useColorScheme();
   const [chatRooms, setChatRooms] = useState([])
   const [prompt, setPrompt] = useState(false)
   const [impChats, setImpChats] = useRecoilState(ImportantChats)
@@ -22,6 +26,7 @@ export default function ChatScreen() {
   const [refresh, setRefresh] = useRecoilState(Refresh)
   const [starLock, setStarLock] = useRecoilState(StarLock)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
+  const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
   const subscriptions = []
 
   const fetchChatRooms = (async() => {
@@ -43,9 +48,16 @@ export default function ChatScreen() {
   })
 
   useEffect(() => {
+    if(userUpdate){
+      setUserUpdate(false)
+      fetchChatRooms()
+    }
+  },[userUpdate])
+
+  useEffect(() => {
     if(prompt && !workMode){
-        setPrompt(false)
-        fetchChatRooms()
+      setPrompt(false)
+      fetchChatRooms()
     }
   },[workMode])
 
@@ -101,7 +113,7 @@ export default function ChatScreen() {
  if(!prompt)
    return(
      <View style={styles.container}>
-       <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>
+       <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
      </View>
    )
 

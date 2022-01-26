@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { Text, View, Pressable, ActivityIndicator } from "react-native";
 import styles from "./styles";
 import * as ImagePicker from 'expo-image-picker';
 import { Fontisto, Ionicons } from '@expo/vector-icons';
@@ -7,11 +7,18 @@ import moment from "moment";
 import { Storage } from 'aws-amplify'
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
+import Colors from "../../constants/Colors";
+import useColorScheme from '../../hooks/useColorScheme';
+import { SentMessages } from "../../atoms/WorkMode";
+import { useRecoilState } from "recoil";
 
 const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetRef }) => {
 
   const [image, setImage] = useState(null);
   const [percentage, setPercentage] = useState(-1)
+  const colorScheme = useColorScheme()
+  const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
+  const [counter, setCounter] = useState('a')
 
   useEffect(() => {
     (async () => {
@@ -76,7 +83,8 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
         },
         content: result.uri+' '+key,
         createdAt: moment().toISOString(),
-        isImage: true
+        isImage: true,
+        index: counter
       })
       //Spam to be checked
       try {
@@ -91,6 +99,12 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
             }
           }))
           updateChatRoomLastMessage(sentMessage.data.createMessage.id)
+          if(Object.keys(sentMsgs).length > 0){
+            const newObj = Object.assign({}, sentMsgs)
+            newObj[counter] = sentMessage.data.createMessage.id
+            setSentMsgs(newObj)
+            setCounter(counter+1)
+          }
         })
         .catch(err => {console.log(err)})
       }
@@ -143,23 +157,23 @@ const ImageSelect = ({ id, name, chatRoomID, addImage, setSnapLock, bottomSheetR
     <View>
       {percentage > -1 ?
         <View style={styles.loadingContainer}>
-          <ActivityIndicator color='black' size='large' />
-          <Text style={styles.progress}>Sending Image</Text>
-          <Text style={[styles.progress,{marginTop: 5}]}>{percentage+' %'}</Text>
+          <ActivityIndicator color={colorScheme == 'light' ? 'black' : '#d0d3d4'} size='large' />
+          <Text style={[styles.progress, {color: colorScheme == 'light' ? 'black' : '#d0d3d4'}]}>Sending Image</Text>
+          <Text style={[styles.progress,{marginTop: 5, color: colorScheme == 'light' ? 'black' : '#d0d3d4'}]}>{percentage+' %'}</Text>
         </View>
       :
         <View style={styles.container}>
           <View style={styles.innerContainer}>
             <Pressable onPress={takePhoto}>
-              <Fontisto name="camera" size={36} color="black" style={styles.image}/>
+              <Fontisto name="camera" size={36} color={colorScheme == 'light' ? 'black' : '#d0d3d4'} style={styles.image}/>
             </Pressable>
-            <Text style={styles.text}>Click a photo</Text>
+            <Text style={[styles.text, {color: colorScheme == 'light' ? 'black' : '#d0d3d4'}]}>Click a Photo</Text>
           </View>
           <View style={styles.innerContainer}>
             <Pressable onPress={pickImage} >
-              <Ionicons name="images" size={40} color="black" style={styles.image}/>
+              <Ionicons name="images" size={40} color={colorScheme == 'light' ? 'black' : '#d0d3d4'} style={styles.image}/>
             </Pressable>
-            <Text style={styles.text}>Open gallery</Text>
+            <Text style={[styles.text, {color: colorScheme == 'light' ? 'black' : '#d0d3d4'}]}>Open Gallery</Text>
           </View>
         </View>
       }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Text, View, Image, Pressable, ActivityIndicator, Clipboard } from "react-native";
+import { Text, View, Image, Pressable, ActivityIndicator, Clipboard, Dimensions } from "react-native";
 import Autolink from 'react-native-autolink';
 import moment from "moment";
 import styles from "./styles";
@@ -13,6 +13,8 @@ import Toast from 'react-native-root-toast';
 import { workmode, isImportant, ImportantMessages, SentMessages, ImpLock } from "../../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 import SpamMessage from "../SpamMessage";
+import Colors from "../../constants/Colors";
+import useColorScheme from '../../hooks/useColorScheme';
 
 export type ChatMessageProps = {
   message: Message
@@ -20,6 +22,8 @@ export type ChatMessageProps = {
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
+  const colorScheme = useColorScheme()
+  const windowHeight = Dimensions.get('window').height;
   const { message, id, bottomSheetRef, removeMsg, toggleImpMsgs } = props
   const [uri, setUri] = useState('toBeFetched')
   const [loading, setLoading] = useState(true)
@@ -40,6 +44,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [sentMsgs] = useRecoilState(SentMessages)
   const [impLock, setImpLock] = useRecoilState(ImpLock)
   const [visible, setVisible] = useState(false)
+  const [maxHeight, setMaxHeight] = useState(350/823 * windowHeight)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -59,10 +64,10 @@ const ChatMessage = (props: ChatMessageProps) => {
       position: 100,
       shadow: true,
       animation: true,
-      backgroundColor: '#ffffff',
-      textColor: 'black',
-      shadowColor: 'black',
-      opacity: 0.9
+      backgroundColor: colorScheme == 'light' ? '#ffffff' : '#4D5656',
+      textColor: Colors[colorScheme].text,
+      shadowColor: colorScheme == 'light' ? 'black' : '#d0d3d4',
+      opacity: 0.95
     })
   }
 
@@ -118,10 +123,12 @@ const ChatMessage = (props: ChatMessageProps) => {
   },[sentMsgs])
 
   const toggleImportant = (prevState) => {
-    setImpLock(true)
-    setOpacity(0.5)
-    message.id == undefined ? displayToast('Please Wait') : ''
-    message.index != undefined ? getID(prevState) : toggleHelper(prevState)
+    if(!message.isImage || !loading){
+      setImpLock(true)
+      setOpacity(0.5)
+      message.id == undefined ? displayToast('Please Wait') : ''
+      message.index != undefined ? getID(prevState) : toggleHelper(prevState)
+    }
   }
 
   const getID = (prevState) => {
@@ -129,6 +136,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       toggleImpMsgs(message.id, prevState)
       setTimeout(() => {
         setMsgImp(!msgImp)
+        setMaxHeight(prevState ? 350/823 * windowHeight - 0.1: 350/823 * windowHeight + 0.1)
         setOpacity(1)
         const keyword = prevState ? 'Unimportant' : 'Important'
         displayToast('Message marked as '+keyword)
@@ -146,10 +154,10 @@ const ChatMessage = (props: ChatMessageProps) => {
     if(!removeMsg){
       setTimeout(() => {
         setMsgImp(!msgImp)
+        setMaxHeight(prevState ? 350/823 * windowHeight - 0.1 : 350/823 * windowHeight + 0.1)
         setOpacity(1)
         const keyword = prevState ? 'Unimportant' : 'Important'
         displayToast('Message marked as '+keyword)
-        setImpLock(false)
       }, 500)
     }
     else{
@@ -158,6 +166,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         displayToast('Message marked as Unimportant')
       }, 500);
     }
+    setImpLock(false)
     const newImpMsgs = !prevState ? [...impMsgs, message.id] : impMsgs.filter((msg) => msg !== message.id)
     setImpMsgs(newImpMsgs)
     await API.graphql(graphqlOperation(updateUser, {
@@ -190,21 +199,21 @@ const ChatMessage = (props: ChatMessageProps) => {
     <View style = {styles.container}>
       <View opacity={opacity} width={message.isImage ? imgWidth : textWidth} style = {
         [styles.messageBox,{
-          backgroundColor: isMyMessage() ? '#e3bbf0' : 'white',
+          backgroundColor: isMyMessage() ? Colors[colorScheme].tintFaded : colorScheme == 'light' ? 'white' : '#424949',
           marginRight: isMyMessage() ? 5 : 50,
           marginLeft: isMyMessage() ? 50 : 5,
           alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
           padding: message.isImage ? 5 : textPadding,
           borderWidth: msgImp ? 2 : 0,
-          borderColor: '#75228f'
+          borderColor: Colors[colorScheme].msgBorder
         }]}>
         <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
-          {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5}] : styles.name}>{message.user.name}</Text>}
+          {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5, color: Colors[colorScheme].name}] : [styles.name,{color: Colors[colorScheme].name}]}>{message.user.name}</Text>}
           <View>
             {message.isImage ?
               <View>
-                {loading && <ActivityIndicator style={styles.activityIndicator} color={'#75228f'} size={'large'}/>}
-                <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover'/>
+                {loading && <ActivityIndicator style={styles.activityIndicator} color={Colors[colorScheme].msgBorder} size={'large'}/>}
+                <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover' maxHeight={maxHeight} />
               </View>
             :
               <View>
@@ -214,7 +223,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                 />
                 {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage} imp={msgImp} toggleImportant={toggleImportant}/>}
                 <Autolink text = {message.content}
-                          style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0}]}
+                          style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0, color: Colors[colorScheme].text}]}
                           hashtag = 'instagram'
                           mention = 'twitter'
                           phone = 'true'
@@ -222,7 +231,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                 />
               </View>}
           </View>
-          <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0}]}>{timestamp()}</Text>
+          <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0, color: colorScheme == 'light' ? 'grey' : '#D0D3D4'}]}>{timestamp()}</Text>
         </Pressable>
       </View>
     </View>

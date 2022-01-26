@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import Colors from "../../constants/Colors";
 
 const styles = StyleSheet.create({
   container: {
@@ -10,18 +9,15 @@ const styles = StyleSheet.create({
     padding: 10
   },
   name: {
-    color: Colors['light'].tint,
     fontWeight: 'bold',
     marginBottom: 2
   },
   message: {
     fontSize: 16,
-    fontStyle: 'italic',
-    color: '#696969'
+    fontStyle: 'italic'
   },
   time: {
     alignSelf: 'flex-end',
-    color: 'gray',
     fontSize: 13
   }
 })

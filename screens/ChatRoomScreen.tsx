@@ -5,7 +5,10 @@ import ChatMessage from "../components/ChatMessage/index";
 import ImageSelect from "../components/ImageSelect/index";
 import InputBox from "../components/InputBox/index";
 import background from "../assets/images/bricks.png";
+import dark from "../assets/images/dark.png";
 import { useRecoilState } from "recoil";
+import Colors from "../constants/Colors";
+import useColorScheme from '../hooks/useColorScheme';
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { messagesByChatRoom } from "../src/graphql/queries";
@@ -15,6 +18,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { workmode, isImportant, SentMessages, ImportantMessages, ImpLock } from "../atoms/WorkMode";
 
 const ChatRoomScreen = () => {
+  const colorScheme = useColorScheme();
   const route = useRoute()
   const [messages, setMessages] = useState([])
   const [myID, setMyID] = useState(null)
@@ -135,7 +139,7 @@ const ChatRoomScreen = () => {
   }
 
   return (
-    <ImageBackground style={styles.background} source = {background}>
+    <ImageBackground style={styles.background} source = {colorScheme == 'light' ? background : dark}>
       <FlatList
         ref = {flatlist}
         keyboardShouldPersistTaps={'always'}
@@ -144,7 +148,7 @@ const ChatRoomScreen = () => {
         keyExtractor={(item) => item.user.name + item.createdAt}
         inverted
       />
-      {!flag && <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>}
+      {!flag && <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>}
       {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
       <InputBox flatlist={flatlist} isFirst={messages.length==0} chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
       <BottomSheet
@@ -152,6 +156,8 @@ const ChatRoomScreen = () => {
         index={-1}
         snapPoints={['23%']}
         enablePanDownToClose={snapLock}
+        backgroundStyle={{backgroundColor: Colors[colorScheme].keypad}}
+        handleIndicatorStyle={{backgroundColor: colorScheme == 'light' ? 'black' : '#d0d3d4'}}
       >
       <ImageSelect id={myID} name={myName} chatRoomID={route.params.id} addImage={addMyMessage} setSnapLock={setSnapLock} bottomSheetRef={bottomSheetRef}/>
       </BottomSheet>

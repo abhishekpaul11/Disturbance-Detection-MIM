@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ContactListItem from "../components/ContactListItem";
+import Colors from "../constants/Colors";
+import useColorScheme from '../hooks/useColorScheme';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { View, Text } from '../components/Themed';
@@ -11,6 +13,7 @@ import { onCreateUser } from "../src/graphql/subscriptions";
 
 export default function ChatScreen() {
 
+  const colorScheme = useColorScheme();
   const[users, setUsers] = useState([])
   const [prompt, setPrompt] = useState(false)
 
@@ -40,7 +43,7 @@ export default function ChatScreen() {
   },[])
 
   if(!prompt)
-    return(<ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>)
+    return(<ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>)
 
   return (
     <View style={styles.container}>

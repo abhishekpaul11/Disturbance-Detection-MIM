@@ -5,11 +5,14 @@ import { useRecoilState } from "recoil";
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { batchGetMessages } from "../src/graphql/queries";
 import ChatMessage from "../components/ChatMessage";
+import Colors from "../constants/Colors";
+import useColorScheme from '../hooks/useColorScheme';
 
 import { Text, View } from '../components/Themed';
 
 export default function ImportantMessagesScreen() {
 
+  const colorScheme = useColorScheme()
   const [importantMessages] = useRecoilState(ImportantMessages)
   const [myID, setMyID] = useState(null)
   const [messages, setMessages] = useState(['empty'])
@@ -43,7 +46,7 @@ export default function ImportantMessagesScreen() {
   },[importantMessages])
 
   const renderSeparator = () => (
-    <View style={styles.separator}/>
+    <View style={[styles.separator, {backgroundColor: Colors[colorScheme].separator}]}/>
   );
 
   const removeMsg = (id) => {
@@ -63,7 +66,7 @@ export default function ImportantMessagesScreen() {
   if(messages[0] === 'empty')
     return(
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>
+        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
       </View>
     )
 
@@ -97,8 +100,7 @@ const styles = StyleSheet.create({
     bottom: '15%'
   },
   separator: {
-    height: 2,
-    margin: 5,
-    backgroundColor: '#ccc'
+    height: 1.5,
+    margin: 5
   }
 });

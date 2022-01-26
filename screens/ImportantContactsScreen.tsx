@@ -3,11 +3,14 @@ import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ChatListItem from "../components/ChatListItem";
 import { ImportantChats, workmode } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
+import Colors from "../constants/Colors";
+import useColorScheme from '../hooks/useColorScheme';
 
 import { Text, View } from '../components/Themed';
 
 export default function ImportantContactsScreen() {
 
+  const colorScheme = useColorScheme()
   const [workMode] = useRecoilState(workmode)
   const [impChats] = useRecoilState(ImportantChats)
 
@@ -21,7 +24,7 @@ export default function ImportantContactsScreen() {
   if(impChats[0] === 'empty')
     return(
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={'#75228f'} style={styles.loading}/>
+        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
       </View>
     )
 

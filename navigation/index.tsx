@@ -10,6 +10,7 @@ import { ColorSchemeName, View, StyleSheet, AsyncStorage } from 'react-native';
 import { TouchableRipple } from "react-native-paper";
 import { useRecoilState } from "recoil";
 import { API, graphqlOperation } from "aws-amplify";
+import useColorScheme from '../hooks/useColorScheme';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import ChatRoomScreen from "../screens/ChatRoomScreen";
@@ -51,6 +52,7 @@ function RootNavigator() {
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [impLock] = useRecoilState(ImpLock)
   const [emoji, setEmoji] = useRecoilState(Emoji)
+  const colorScheme = useColorScheme()
 
   AsyncStorage.getItem('workmode').then(data => {
     const savedColor = data === 'ON' ? 'orange' : 'lightgreen'
@@ -78,10 +80,10 @@ function RootNavigator() {
       position: -100,
       shadow: true,
       animation: true,
-      backgroundColor: '#ffffff',
-      textColor: 'black',
-      shadowColor: 'black',
-      opacity: 0.9
+      backgroundColor: colorScheme == 'light' ? '#ffffff' : '#4D5656',
+      textColor: Colors[colorScheme].text,
+      shadowColor: colorScheme == 'light' ? 'black' : '#d0d3d4',
+      opacity: 0.95
     })
     const value = newColor === 'orange' ? 'ON' : 'OFF'
     AsyncStorage.setItem('workmode', value);
@@ -90,7 +92,7 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{
       headerStyle: {
-        backgroundColor: Colors.light.tint,
+        backgroundColor: Colors[colorScheme].tint,
         shadowOpacity: 0,
         elevation: 0
       },
@@ -99,6 +101,9 @@ function RootNavigator() {
     <Stack.Screen name="Root" component={MainTabNavigator}
       options =  {{
         title: 'Deep Chat',
+        headerTitleStyle: {
+          color: colorScheme == 'light' ? 'white' : '#D0D3D4'
+        },
         headerRight: () => (
           <View style={styles.rootHeader}>
             {loaded && <TouchableRipple onPress={toggleWorkmode} rippleColor={'#cccccc42'} >
@@ -106,8 +111,8 @@ function RootNavigator() {
                 <MaterialIcons name={icon} size={24} color={color} />
               </View>
             </TouchableRipple>}
-            <Octicons name='search' size={22} color={'white'}/>
-            <MaterialCommunityIcons name='dots-vertical' size={22} color={'white'}/>
+            <Octicons name='search' size={22} color={colorScheme == 'light' ? 'white' : '#D0D3D4'}/>
+            <MaterialCommunityIcons name='dots-vertical' size={22} color={colorScheme == 'light' ? 'white' : '#D0D3D4'}/>
           </View>
         )
       }}
@@ -178,10 +183,10 @@ function RootNavigator() {
               position: -100,
               shadow: true,
               animation: true,
-              backgroundColor: '#ffffff',
-              textColor: 'black',
-              shadowColor: 'black',
-              opacity: 0.9
+              backgroundColor: colorScheme == 'light' ? '#ffffff' : '#4D5656',
+              textColor: Colors[colorScheme].text,
+              shadowColor: colorScheme == 'light' ? 'black' : '#d0d3d4',
+              opacity: 0.95
             })
           }
           return(

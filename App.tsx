@@ -42,7 +42,7 @@ const App = () => {
         const newUser = {
           id: userInfo.attributes.sub,
           name: userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1),
-          imageUri: 'https://us.123rf.com/450wm/happyvector071/happyvector0711904/happyvector071190416116/120957921-creative-illustration-of-default-avatar-profile-placeholder-isolated-on-background-art-design-grey-p.jpg?ver=6',
+          imageUri: 'none',
           status: 'Focusing'
         }
         await API.graphql(graphqlOperation(createUser, {

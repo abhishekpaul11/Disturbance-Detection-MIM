@@ -23,8 +23,6 @@ export default function MainTabNavigator() {
     <MainTab.Navigator
       initialRouteName="Chats"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tabs,
-        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         tabBarStyle: {
           backgroundColor: Colors[colorScheme].tint,
         },
@@ -32,17 +30,13 @@ export default function MainTabNavigator() {
           backgroundColor: Colors[colorScheme].tabs,
           height: 4
         },
-        tabBarLabelStyle: {
-           fontWeight: 'bold',
-           fontSize: 15
-        },
         tabBarShowIcons: true,
       }}>
       <MainTab.Screen
         name="Chats"
         component={ChatScreen}
         options = {{
-          tabBarIcon: () => <Entypo name="chat" size={24} color={Colors[colorScheme].tabs} />,
+          tabBarIcon: ({focused}) => <Entypo name="chat" size={24} color={colorScheme == 'light' ? Colors.light.tabs : focused ? Colors.dark.tabs : '#D0D3D4'} />,
           tabBarLabel: () => null
         }}
       />
@@ -50,7 +44,7 @@ export default function MainTabNavigator() {
         name="ImportantContacts"
         component={ImportantContactsScreen}
         options = {{
-          tabBarIcon: () => <AntDesign name="contacts" size={24} color={Colors[colorScheme].tabs} />,
+          tabBarIcon: ({focused}) => <AntDesign name="contacts" size={24} color={colorScheme == 'light' ? Colors.light.tabs : focused ? Colors.dark.tabs : '#D0D3D4'} />,
           tabBarLabel: () => null
         }}
       />
@@ -58,7 +52,7 @@ export default function MainTabNavigator() {
         name="ImportantMessages"
         component={ImportantMessagesScreen}
         options = {{
-          tabBarIcon: () => <MaterialIcons name="message" size={24} color={Colors[colorScheme].tabs} />,
+          tabBarIcon: ({focused}) => <MaterialIcons name="message" size={24} color={colorScheme == 'light' ? Colors.light.tabs : focused ? Colors.dark.tabs : '#D0D3D4'} />,
           tabBarLabel: () => null
         }}
       />

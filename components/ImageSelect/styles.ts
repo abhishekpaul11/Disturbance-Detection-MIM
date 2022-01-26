@@ -16,7 +16,8 @@ const styles = StyleSheet.create({
     height: 90
   },
   text: {
-    fontSize: 15
+    fontSize: 15,
+    fontWeight: 'bold'
   },
   loadingContainer: {
     padding: 20,

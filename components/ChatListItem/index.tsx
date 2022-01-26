@@ -6,11 +6,12 @@ import moment from "moment";
 import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { TouchableRipple } from "react-native-paper";
 import Toast from 'react-native-root-toast';
 import { useRecoilState } from "recoil";
 import { ImportantChats, UnimportantChats, workmode, ImportantMessages } from "../../atoms/WorkMode";
+import { UserUpdate } from "../../atoms/HelperStates";
 
 import { API, graphqlOperation } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -27,6 +28,8 @@ const ChatListItem = (props: ChatListItemProps) => {
   const [workMode] = useRecoilState(workmode)
   const [important, toggleImp] = useState(chatRoomUser.isImportant)
   const [impMsgs] = useRecoilState(ImportantMessages)
+  const [imgDisplay, setImgDisplay] = useState('none')
+  const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
 
   useEffect(() => {
     const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
@@ -37,6 +40,7 @@ const ChatListItem = (props: ChatListItemProps) => {
     }).subscribe({
       next: (data) => {
         setUser(data.value.data.onUserUpdatedByUserID)
+        setUserUpdate(true)
       }
     })
     return () => sub.unsubscribe()
@@ -69,10 +73,10 @@ const ChatListItem = (props: ChatListItemProps) => {
       position: -100,
       shadow: true,
       animation: true,
-      backgroundColor: '#ffffff',
-      textColor: 'black',
-      shadowColor: 'black',
-      opacity: 0.9
+      backgroundColor: colorScheme == 'light' ? '#ffffff' : '#4D5656',
+      textColor: Colors[colorScheme].text,
+      shadowColor: colorScheme == 'light' ? 'black' : '#d0d3d4',
+      opacity: 0.95
     })
     var newChatRoomUser = Object.assign({}, chatRoomUser)
     newChatRoomUser.isImportant = !prevStatus
@@ -102,19 +106,24 @@ const ChatListItem = (props: ChatListItemProps) => {
 
           <View style={styles.leftContainer}>
 
-            <Image source={{uri: user.imageUri}} style={styles.avatar}/>
+            {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
+            {(user.imageUri == 'none' || imgDisplay == 'none') &&
+              <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
+                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.light.tint : Colors.dark.tabs} />
+              </View>
+            }
 
             <View style={styles.midContainer}>
 
               <View style={styles.upperContainer}>
                 <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.username,{color: Colors[colorScheme].text}]}>{user.name}</Text>
-                <Text style={styles.time}>{displayTime()}</Text>
+                <Text style={[styles.time, {color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>{displayTime()}</Text>
               </View>
 
               <View style={styles.messageContainer}>
-                {chatRoom.lastMessage.user.id === myID && <Text style={styles.lastMessage}>You: </Text>}
-                {!(workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam) && chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color="grey" />}
-                <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? [styles.lastMessage,{flex: 1, fontStyle: 'italic'}] : [styles.lastMessage,{flex: 1}]}>{displayMessage()}</Text>
+              {chatRoom.lastMessage.user.id === myID && <Text style={[styles.lastMessage, {color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>You: </Text>}
+                {!(workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam) && chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color={colorScheme == 'light' ? 'grey' : '#d0d3d4'} />}
+                <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? [styles.lastMessage,{flex: 1, fontStyle: 'italic', color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}] : [styles.lastMessage,{flex: 1, color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>{displayMessage()}</Text>
               </View>
             </View>
 

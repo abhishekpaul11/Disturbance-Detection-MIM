@@ -5,6 +5,8 @@ import moment from "moment";
 import { MaterialCommunityIcons, FontAwesome5, Entypo, Ionicons, MaterialIcons, Octicons, AntDesign } from "@expo/vector-icons";
 import EmojiSelector, { Categories} from 'react-native-emoji-selector'
 import { Emoji } from "../../atoms/HelperStates";
+import Colors from "../../constants/Colors";
+import useColorScheme from '../../hooks/useColorScheme';
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createMessage, updateChatRoom } from "../../src/graphql/mutations";
@@ -13,6 +15,7 @@ import { useRecoilState } from "recoil";
 
 const InputBox = (props) => {
 
+  const colorScheme = useColorScheme()
   const { chatRoomID, isFirst, addMessage, sendImage, getEmoji, showEmo, flatlist } = props
   const [message, setMessage] = useState('')
   const [myUserID, setMyUserID] = useState(null)
@@ -72,7 +75,8 @@ const InputBox = (props) => {
         else{
           const promises = []
           words.forEach(word => {
-            const code = word.substring(word.includes('youtu.be') ? word.lastIndexOf('/')+1 : word.lastIndexOf('=')+1)
+            const startingIndex = word.includes('youtu.be') || word.includes('shorts') ? word.lastIndexOf('/')+1 : word.lastIndexOf('=')+1
+            const code = word.substring(startingIndex, startingIndex + 11)
             promises.push(new Promise(async(resolve) => {
               const result = await fetch('https://im-youtube.herokuapp.com/predict?t='+code)
               const ans = await result.json()
@@ -195,39 +199,40 @@ const InputBox = (props) => {
   return (
     <View>
       <View style={styles.container}>
-        <View style={styles.mainContainer}>
+        <View style={[styles.mainContainer,{borderColor: colorScheme == 'light' ? Colors.light.tint : 'transparent', backgroundColor: Colors[colorScheme].keypad}]}>
           {emoji
           ? emojiSearch
             ? <TouchableOpacity onPress={endSearch}>
-                <AntDesign name="arrowleft" size={24} color="grey" />
+                <AntDesign name="arrowleft" size={24} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} />
               </TouchableOpacity>
             : <TouchableOpacity onPress={() => keyboard.current.focus()}>
-                <Entypo name="keyboard" size={24} color="grey" />
+                <Entypo name="keyboard" size={24} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} />
               </TouchableOpacity>
           : <TouchableOpacity onPress={pickEmoji}>
-              <FontAwesome5 name='laugh-beam' size={24} color={'grey'} />
+              <FontAwesome5 name='laugh-beam' size={24} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} />
             </TouchableOpacity>
           }
           <TextInput ref = {keyboard}
                      placeholder="Say Something"
-                     style={styles.textInput}
+                     placeholderTextColor= {colorScheme == 'light' ? 'grey' : '#D0D3D4'}
+                     style={[styles.textInput, {color: Colors[colorScheme].text}]}
                      multiline
                      value = {message}
                      onChangeText = {setMessage}
                      />
           {emoji && !emojiSearch &&
             <TouchableOpacity onPress={() => setEmojiSearch(true)}>
-              <Octicons name='search' size={22} color={'grey'} style={styles.icon}/>
+              <Octicons name='search' size={22} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} style={styles.icon}/>
             </TouchableOpacity> }
-          {!emoji && <Entypo name='attachment' size={24} color={'grey'} style={styles.icon}/>}
+          {!emoji && <Entypo name='attachment' size={24} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} style={styles.icon}/>}
           {!message &&
             <TouchableOpacity onPress = {addImage}>
-              <Ionicons name='image-outline' size={26} color={'grey'} style={styles.icon}/>
+              <Ionicons name='image-outline' size={26} color={colorScheme == 'light' ? 'grey' : '#D0D3D4'} style={styles.icon}/>
             </TouchableOpacity>
           }
         </View>
         <TouchableOpacity onPress={onPress}>
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, {backgroundColor: Colors['light'].tint}]}>
             {
               !message
               ? <MaterialCommunityIcons name='microphone' size={28} color={'white'} />
@@ -236,11 +241,11 @@ const InputBox = (props) => {
           </View>
         </TouchableOpacity>
       </View>
-      {emoji && <View style={[styles.emojiContainer, { height: emojiHeight }]}>
+      {emoji && <View style={{backgroundColor: colorScheme == 'light' ? '#ffffffaa' : '#2a2f32', height: emojiHeight }}>
         <EmojiSelector
           category = {emojiCheck ? Categories.history : Categories.emotion}
           onEmojiSelected={(emoji) => handleEmoji(emoji)}
-          theme = {emojiSearch ? 'transparent' : '#75228f'}
+          theme = {emojiSearch ? 'transparent' : colorScheme == 'light' ? Colors.light.tint : 'black'}
           showHistory = {true}
           columns = {10}
           placeholder = {'Search'}

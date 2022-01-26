@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
     },
     lastMessage: {
       fontSize: 16,
-      color: 'grey',
       height: 20
     },
     messageContainer: {
@@ -37,7 +36,6 @@ const styles = StyleSheet.create({
     },
     time:{
       fontSize: 13,
-      color: 'grey',
       paddingRight: 5,
       marginLeft: 'auto',
       alignSelf: 'flex-end'
@@ -46,7 +44,9 @@ const styles = StyleSheet.create({
       width: 60,
       height: 60,
       marginRight: 12,
-      borderRadius: 50
+      borderRadius: 50,
+      alignItems: 'center',
+      justifyContent: 'center'
     }
 })
 

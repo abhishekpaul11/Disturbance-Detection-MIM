@@ -6,6 +6,7 @@ import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
 import { TouchableRipple } from "react-native-paper";
+import { Ionicons } from '@expo/vector-icons';
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createChatRoom, createChatRoomUser } from "../../src/graphql/mutations";
@@ -15,6 +16,7 @@ import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
 const ContactListItem = (props: ContactListItemProps) => {
   const { data } = props
   const [user, setUser] = useState(data)
+  const [imgDisplay, setImgDisplay] = useState('none')
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   var flag = true
@@ -105,11 +107,16 @@ const ContactListItem = (props: ContactListItemProps) => {
       <View style={styles.container}>
           <View style={styles.leftContainer}>
 
-            <Image source={{uri: user.imageUri}} style={styles.avatar}/>
+            {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
+            {(user.imageUri == 'none' || imgDisplay == 'none') &&
+              <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
+                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.light.tint : Colors.dark.tabs} />
+              </View>
+            }
 
             <View style={styles.midContainer}>
                 <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.username,{color: Colors[colorScheme].text}]}>{user.name}</Text>
-                <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.lastMessage}>{user.status}</Text>
+                <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.status, {color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>{user.status}</Text>
             </View>
 
           </View>

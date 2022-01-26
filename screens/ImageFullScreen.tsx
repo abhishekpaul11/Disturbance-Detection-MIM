@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image, StatusBar, Pressable, BackHandler, Text, View, Animated } from 'react-native';
+import { StyleSheet, Image, StatusBar, Pressable, BackHandler, Text, View, Animated, Platform } from 'react-native';
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { HeaderBackButton } from "@react-navigation/stack";
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
@@ -76,6 +76,13 @@ export default function ImageFullScreen() {
     return true;
   }
 
+  const hasNotch = () => {
+    if (Platform.OS === 'android') {
+      return StatusBar.currentHeight > 24
+    }
+    return true
+  }
+
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
     return () => {
@@ -84,7 +91,7 @@ export default function ImageFullScreen() {
   },[]);
 
   useEffect(() => {
-    StatusBar.setHidden(visibility)
+    if(!hasNotch()) StatusBar.setHidden(visibility)
     StatusBar.setBarStyle('light-content')
     StatusBar.setBackgroundColor('#00000080', true)
   },[visibility])

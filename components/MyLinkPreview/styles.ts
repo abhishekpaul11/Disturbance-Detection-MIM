@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
-    borderColor: 'black'
   },
   textContainer: {
     padding: 7,
@@ -32,7 +31,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     resizeMode: 'cover',
     backgroundColor: 'white',
-    borderColor: 'black'
   }
 })
 
