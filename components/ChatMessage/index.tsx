@@ -4,7 +4,7 @@ import Autolink from 'react-native-autolink';
 import moment from "moment";
 import styles from "./styles";
 import { API, graphqlOperation } from "aws-amplify";
-import { updateUser } from "../../src/graphql/mutations";
+import { updateUser, updateMessage } from "../../src/graphql/mutations";
 import { useNavigation } from "@react-navigation/native";
 import { Storage } from "aws-amplify";
 import MyLinkPreview from "../MyLinkPreview/index";
@@ -15,6 +15,8 @@ import { useRecoilState } from "recoil";
 import SpamMessage from "../SpamMessage";
 import Colors from "../../constants/Colors";
 import useColorScheme from '../../hooks/useColorScheme';
+import GestureRecognizer from 'react-native-swipe-gestures';
+import db from '../../firebase';
 
 export type ChatMessageProps = {
   message: Message
@@ -45,6 +47,9 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [impLock, setImpLock] = useRecoilState(ImpLock)
   const [visible, setVisible] = useState(false)
   const [maxHeight, setMaxHeight] = useState(350/823 * windowHeight)
+  const [isSpam, setSpam] = useState(message.isSpam)
+  const feedbackSent = useRef(false)
+  const [msgMargin, setMsgMargin] = useState(5)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -73,7 +78,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
   const handleMsg = async(message) => {
     if(!message.isImage){
-      if (!(workMode && !isImp && !msgImp && message.isSpam)){
+      if (!(workMode && !isImp && !msgImp && isSpam)){
         Clipboard.setString(message.content)
         displayToast('Message copied to Clipboard')
       }
@@ -182,12 +187,54 @@ const ChatMessage = (props: ChatMessageProps) => {
       setVisible(true)
       displayToast('Message Unmasked Temporarily')
       setTimeout(() => {
-        setVisible(false)
+        if(!feedbackSent.current) setVisible(false)
       }, 5000);
     }
   }
 
-  if(workMode && !isImp && !msgImp && message.isSpam && !visible){
+  const sendFeedback = async(direction) => {
+    if(workMode && msgImp){
+      setMsgMargin(10)
+      displayToast('Important Messages cannot be Flagged')
+      setTimeout(() => { setMsgMargin(5) }, 250);
+      return
+    }
+    if(workMode && !msgImp && !message.id){
+      setMsgMargin(10)
+      displayToast('Please try after sometime')
+      setTimeout(() => { setMsgMargin(5) }, 250);
+      return
+    }
+    if(workMode && !msgImp && message.id && ((isMyMessage() && direction == 'left') || (!isMyMessage() && direction == 'right'))){
+      feedbackSent.current = true
+      setMsgMargin(10)
+      const keyword = isSpam ? 'Removing' : 'Adding'
+      displayToast(keyword + ' Flag...')
+      setTimeout(() => { setMsgMargin(5) }, 250);
+      await API.graphql(graphqlOperation(updateMessage, {
+        input: {
+          id: message.id,
+          isSpam: !isSpam
+        }
+      }))
+      const path = message.isImage ? '/Image' : isYoutubeLink(message.content) ? '/Youtube' : '/Text'
+      db.ref(path).child(message.id).set({
+        message: message.content,
+        label: isSpam ? 0 : 1
+      })
+      isSpam ? setSpam(false) : setSpam(true)
+      feedbackSent.current = false
+    }
+  }
+
+  const isYoutubeLink = (message) => {
+    message = message.replace(/\s+/g, '+')
+    var words = message.split('+')
+    words = words.filter(word => (word.includes('youtu.be') || word.includes('youtube.com')))
+    return words.length != 0
+  }
+
+  if(workMode && !isImp && !msgImp && isSpam && !visible){
     return(
       <Pressable onLongPress={show}>
         <SpamMessage isMyMessage={isMyMessage} timestamp={timestamp} name={message.user.name}/>
@@ -200,39 +247,41 @@ const ChatMessage = (props: ChatMessageProps) => {
       <View opacity={opacity} width={message.isImage ? imgWidth : textWidth} style = {
         [styles.messageBox,{
           backgroundColor: isMyMessage() ? Colors[colorScheme].tintFaded : colorScheme == 'light' ? 'white' : '#424949',
-          marginRight: isMyMessage() ? 5 : 50,
-          marginLeft: isMyMessage() ? 50 : 5,
+          marginRight: isMyMessage() ? msgMargin : 55 - msgMargin,
+          marginLeft: isMyMessage() ? 55 - msgMargin : msgMargin,
           alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
           padding: message.isImage ? 5 : textPadding,
           borderWidth: msgImp ? 2 : 0,
           borderColor: Colors[colorScheme].msgBorder
         }]}>
-        <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
-          {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5, color: Colors[colorScheme].name}] : [styles.name,{color: Colors[colorScheme].name}]}>{message.user.name}</Text>}
-          <View>
-            {message.isImage ?
-              <View>
-                {loading && <ActivityIndicator style={styles.activityIndicator} color={Colors[colorScheme].msgBorder} size={'large'}/>}
-                <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover' maxHeight={maxHeight} />
-              </View>
-            :
-              <View>
-                <LinkPreview text={message.content}
-                             containerStyle = {{display: 'none'}}
-                             onPreviewDataFetched	= {setLinkData}
-                />
-                {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage} imp={msgImp} toggleImportant={toggleImportant}/>}
-                <Autolink text = {message.content}
-                          style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0, color: Colors[colorScheme].text}]}
-                          hashtag = 'instagram'
-                          mention = 'twitter'
-                          phone = 'true'
-                          onLongPress = {(url) => {Clipboard.setString(url); displayToast('Link copied to Clipboard')}}
-                />
-              </View>}
-          </View>
-          <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0, color: colorScheme == 'light' ? 'grey' : '#D0D3D4'}]}>{timestamp()}</Text>
-        </Pressable>
+        <GestureRecognizer onSwipeLeft={() => sendFeedback('left')} onSwipeRight={() => sendFeedback('right')}>
+          <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
+            {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5, color: Colors[colorScheme].name}] : [styles.name,{color: Colors[colorScheme].name}]}>{message.user.name}</Text>}
+            <View>
+              {message.isImage ?
+                <View>
+                  {loading && <ActivityIndicator style={styles.activityIndicator} color={Colors[colorScheme].msgBorder} size={'large'}/>}
+                  <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover' maxHeight={maxHeight} />
+                </View>
+              :
+                <View>
+                  <LinkPreview text={message.content}
+                               containerStyle = {{display: 'none'}}
+                               onPreviewDataFetched	= {setLinkData}
+                  />
+                  {(linkData?.title || linkData?.description || linkData?.image) && <MyLinkPreview linkData = {linkData} setTextPadding={setTextPadding} setTextWidth={setTextWidth} isMyMessage={isMyMessage} imp={msgImp} toggleImportant={toggleImportant}/>}
+                  <Autolink text = {message.content}
+                            style = {[styles.message, { paddingTop: textPadding==5 ? 5 : 0, paddingHorizontal: textPadding==5 ? 5 : 0, color: Colors[colorScheme].text}]}
+                            hashtag = 'instagram'
+                            mention = 'twitter'
+                            phone = 'true'
+                            onLongPress = {(url) => {Clipboard.setString(url); displayToast('Link copied to Clipboard')}}
+                  />
+                </View>}
+            </View>
+            <Text style = {[styles.time, { paddingRight: textPadding==5 ? 5 : 0, color: colorScheme == 'light' ? 'grey' : '#D0D3D4'}]}>{timestamp()}</Text>
+          </Pressable>
+        </GestureRecognizer>
       </View>
     </View>
   )
