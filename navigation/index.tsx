@@ -16,17 +16,24 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import ChatRoomScreen from "../screens/ChatRoomScreen";
 import ContactsScreen from "../screens/ContactsScreen";
 import ImageFullScreen from "../screens/ImageFullScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 import { RootStackParamList } from '../types';
 import MainTabNavigator from './MainTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
-import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto } from "@expo/vector-icons";
+import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto, Ionicons } from "@expo/vector-icons";
 import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant, SentMessages, ImportantMessages, ImpLock} from "../atoms/WorkMode";
-import { Emoji } from "../atoms/HelperStates";
+import { Emoji, UserData } from "../atoms/HelperStates";
 import Toast from 'react-native-root-toast';
 import { updateChatRoomUser, updateUser } from "../src/graphql/mutations";
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation({ colorScheme, userData }: { colorScheme: ColorSchemeName }) {
+
+  const [, setUserData] = useRecoilState(UserData)
+  useEffect(() => {
+    setUserData(userData)
+  },[])
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -99,7 +106,7 @@ function RootNavigator() {
       headerTintColor: Colors.light.background
     }}>
     <Stack.Screen name="Root" component={MainTabNavigator}
-      options =  {{
+      options = {({ navigation }) => ({
         title: 'Deep Chat',
         headerTitleStyle: {
           color: colorScheme == 'light' ? 'white' : '#D0D3D4'
@@ -107,15 +114,19 @@ function RootNavigator() {
         headerRight: () => (
           <View style={styles.rootHeader}>
             {loaded && <TouchableRipple onPress={toggleWorkmode} rippleColor={'#cccccc42'} >
-              <View style={styles.workButton}>
+              <View style={styles.headerButton}>
                 <MaterialIcons name={icon} size={24} color={color} />
               </View>
             </TouchableRipple>}
             <Octicons name='search' size={22} color={colorScheme == 'light' ? 'white' : '#D0D3D4'}/>
-            <MaterialCommunityIcons name='dots-vertical' size={22} color={colorScheme == 'light' ? 'white' : '#D0D3D4'}/>
+            <TouchableRipple onPress={() => navigation.navigate('Settings')} rippleColor={'#cccccc42'}>
+              <View style={styles.headerButton}>
+                <Ionicons name='md-settings-sharp' size={23} color={colorScheme == 'light' ? 'white' : '#D0D3D4'}/>
+              </View>
+            </TouchableRipple>
           </View>
         )
-      }}
+      })}
     />
     <Stack.Screen
       name="ChatRoom"
@@ -213,6 +224,10 @@ function RootNavigator() {
         headerShown: false
       })}
     />
+    <Stack.Screen
+      name="Settings"
+      component={SettingsScreen}
+    />
     <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );
@@ -221,12 +236,12 @@ function RootNavigator() {
 const styles = StyleSheet.create({
   rootHeader: {
     flexDirection: 'row',
-    width: 120,
+    width: 130,
     justifyContent: 'space-between',
     marginRight: 10,
     alignItems: 'center'
   },
-  workButton: {
+  headerButton: {
     borderRadius: 50,
     width: 35,
     height: 35,

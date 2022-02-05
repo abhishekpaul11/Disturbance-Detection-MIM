@@ -9,3 +9,8 @@ export const UserUpdate = atom({
   key: 'UserUpdate',
   default: false
 })
+
+export const UserData = atom({
+  key: 'UserData',
+  default: {}
+})

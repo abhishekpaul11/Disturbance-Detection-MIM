@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LogBox } from "react-native";
 import { RecoilRoot } from "recoil"
@@ -21,6 +21,7 @@ import { withAuthenticator } from 'aws-amplify-react-native'
 const App = () => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const [user, setUser] = useState(null)
   LogBox.ignoreLogs(['Setting a timer']);
 
   //run this snippet only when App is first mounted
@@ -33,7 +34,14 @@ const App = () => {
         const userData = await API.graphql(graphqlOperation(getUser, {
           id: userInfo.attributes.sub
         }))
-        if(userData.data.getUser){
+        const userDetails = userData.data.getUser
+        if(userDetails){
+          setUser({
+            id: userDetails.id,
+            name: userDetails.name,
+            imageUri: userDetails.imageUri,
+            status: userDetails.status
+          })
           console.log('User is already present in database')
           return
         }
@@ -45,6 +53,7 @@ const App = () => {
           imageUri: 'none',
           status: 'Focusing'
         }
+        setUser(newUser)
         await API.graphql(graphqlOperation(createUser, {
           input: newUser
         }))
@@ -52,14 +61,14 @@ const App = () => {
     })()
   }, [])
 
-  if (!isLoadingComplete) {
+  if (!isLoadingComplete || !user) {
     return null;
   } else {
     return (
       <SafeAreaProvider>
         <RootSiblingParent>
           <RecoilRoot>
-            <Navigation colorScheme={colorScheme} />
+            <Navigation colorScheme={colorScheme} userData={user}/>
           </RecoilRoot>
           <StatusBar style={'light'}/>
         </RootSiblingParent>

@@ -18,7 +18,10 @@ export default {
     msgBorder: tintColorLight,
     keypad: 'white',
     name: tintColorLight,
-    contactBackground: '#cccccccc'
+    contactBackground: '#cccccccc',
+    settingsSeparator: '#cccccc50',
+    settingsSecondary: 'gray',
+    settingsIcons: tintColorLight
   },
   dark: {
     text: '#fff',
@@ -32,6 +35,9 @@ export default {
     msgBorder: '#D0D3D4',
     keypad: '#424949',
     name: tintColorDarkName,
-    contactBackground: '#33393d'
+    contactBackground: '#33393d',
+    settingsSeparator: '#2a2f32',
+    settingsSecondary: '#8a969c',
+    settingsIcons: tintColorDarkName
   },
 };
