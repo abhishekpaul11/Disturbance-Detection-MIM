@@ -6,7 +6,7 @@ export default {
     "slug": "deepchat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo_android_foreground.png",
     "scheme": "myapp",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -20,17 +20,19 @@ export default {
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/images/logo_ios.png"
     },
     "android": {
+      "icon": "./assets/images/logo_android.png",
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo_android_foreground.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/logo_ios.png"
     },
     "extra": {
       apiKey: process.env.API_KEY,
