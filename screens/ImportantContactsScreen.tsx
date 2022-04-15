@@ -5,6 +5,7 @@ import { ImportantChats, workmode } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
+import { TintColor } from "../atoms/HelperStates";
 
 import { Text, View } from '../components/Themed';
 
@@ -13,6 +14,7 @@ export default function ImportantContactsScreen() {
   const colorScheme = useColorScheme()
   const [workMode] = useRecoilState(workmode)
   const [impChats] = useRecoilState(ImportantChats)
+  const [tintColor] = useRecoilState(TintColor)
 
   if(!workMode)
     return (
@@ -24,7 +26,7 @@ export default function ImportantContactsScreen() {
   if(impChats[0] === 'empty')
     return(
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
+        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors.customThemes[tintColor]['light'].tint : Colors.customThemes[tintColor].dark.tabs} style={styles.loading}/>
       </View>
     )
 

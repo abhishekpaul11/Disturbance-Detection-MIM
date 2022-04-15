@@ -5,8 +5,11 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import Colors from '../constants/Colors';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
+import { useRecoilState } from "recoil";
+import { TintColor } from "../atoms/HelperStates";
 
 export default function EditScreenInfo({ path }: { path: string }) {
+  const [tintColor] = useRecoilState(TintColor)
   return (
     <View>
       <View style={styles.getStartedContainer}>
@@ -34,7 +37,7 @@ export default function EditScreenInfo({ path }: { path: string }) {
 
       <View style={styles.helpContainer}>
         <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-          <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
+          <Text style={styles.helpLinkText} lightColor={Colors.customThemes[tintColor].light.tint}>
             Tap here if your app doesn't automatically update after making changes
           </Text>
         </TouchableOpacity>

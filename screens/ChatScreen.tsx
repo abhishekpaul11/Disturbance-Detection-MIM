@@ -9,8 +9,9 @@ import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
 import { onMessageCreatedByChatRoomID, onChatRoomUserCreatedByUserID } from "../src/graphql/subscriptions";
 import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock, ImportantMessages } from "../atoms/WorkMode";
-import { UserUpdate } from "../atoms/HelperStates";
+import { UserUpdate, TintColor } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
+
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { View, Text } from '../components/Themed';
@@ -28,6 +29,7 @@ export default function ChatScreen() {
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
   const subscriptions = []
+  const [tintColor] = useRecoilState(TintColor)
 
   const fetchChatRooms = (async() => {
      try{
@@ -113,7 +115,7 @@ export default function ChatScreen() {
  if(!prompt)
    return(
      <View style={styles.container}>
-       <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
+       <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors.customThemes[tintColor]['light'].tint : Colors.customThemes[tintColor].dark.tabs} style={styles.loading}/>
      </View>
    )
 

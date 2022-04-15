@@ -16,6 +16,7 @@ import { updateChatRoom, updateUser } from "../src/graphql/mutations";
 import { onIncomingMessage } from "../src/graphql/subscriptions";
 import BottomSheet from '@gorhom/bottom-sheet';
 import { workmode, isImportant, SentMessages, ImportantMessages, ImpLock } from "../atoms/WorkMode";
+import { TintColor } from "../atoms/HelperStates";
 
 const ChatRoomScreen = () => {
   const colorScheme = useColorScheme();
@@ -36,6 +37,7 @@ const ChatRoomScreen = () => {
   const [sentMsgs, setSentMsgs] = useRecoilState(SentMessages)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [impLock, setImpLock] = useRecoilState(ImpLock)
+  const [tintColor] = useRecoilState(TintColor)
 
   const getEmoji = (emoji) => { emo.current = emoji }
 
@@ -148,7 +150,7 @@ const ChatRoomScreen = () => {
         keyExtractor={(item) => item.user.name + item.createdAt}
         inverted
       />
-      {!flag && <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>}
+      {!flag && <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors.customThemes[tintColor]['light'].tint : Colors.customThemes[tintColor].dark.tabs} style={styles.loading}/>}
       {messages.length==0 && flag && <Text style={styles.text}>{'You are yet to start a conversation\nSay \'Hi\' to '+route.params.name}</Text>}
       <InputBox flatlist={flatlist} isFirst={messages.length==0} chatRoomID={route.params.id} addMessage={addMyMessage} sendImage = {sendImage} getEmoji={getEmoji} showEmo={showEmo}/>
       <BottomSheet

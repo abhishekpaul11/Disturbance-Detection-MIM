@@ -17,13 +17,14 @@ import ChatRoomScreen from "../screens/ChatRoomScreen";
 import ContactsScreen from "../screens/ContactsScreen";
 import ImageFullScreen from "../screens/ImageFullScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import TintColorScreen from "../screens/TintColorScreen";
 import { RootStackParamList } from '../types';
 import MainTabNavigator from './MainTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
 import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto, Ionicons } from "@expo/vector-icons";
 import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant, SentMessages, ImportantMessages, ImpLock} from "../atoms/WorkMode";
-import { Emoji, UserData } from "../atoms/HelperStates";
+import { Emoji, UserData, TintColor } from "../atoms/HelperStates";
 import Toast from 'react-native-root-toast';
 import { updateChatRoomUser, updateUser } from "../src/graphql/mutations";
 
@@ -60,6 +61,7 @@ function RootNavigator() {
   const [impLock] = useRecoilState(ImpLock)
   const [emoji, setEmoji] = useRecoilState(Emoji)
   const colorScheme = useColorScheme()
+  const [tintColor] = useRecoilState(TintColor)
 
   AsyncStorage.getItem('workmode').then(data => {
     const savedColor = data === 'ON' ? 'orange' : 'lightgreen'
@@ -99,7 +101,7 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{
       headerStyle: {
-        backgroundColor: Colors[colorScheme].tint,
+        backgroundColor: Colors.customThemes[tintColor][colorScheme].tint,
         shadowOpacity: 0,
         elevation: 0
       },
@@ -227,6 +229,13 @@ function RootNavigator() {
     <Stack.Screen
       name="Settings"
       component={SettingsScreen}
+    />
+    <Stack.Screen
+      name="TintColorScreen"
+      component={TintColorScreen}
+      options={() => ({
+        title: 'Tint Color'
+      })}
     />
     <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>

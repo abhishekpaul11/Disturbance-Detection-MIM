@@ -11,7 +11,7 @@ import { TouchableRipple } from "react-native-paper";
 import Toast from 'react-native-root-toast';
 import { useRecoilState } from "recoil";
 import { ImportantChats, UnimportantChats, workmode, ImportantMessages } from "../../atoms/WorkMode";
-import { UserUpdate } from "../../atoms/HelperStates";
+import { UserUpdate, TintColor } from "../../atoms/HelperStates";
 
 import { API, graphqlOperation } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -30,6 +30,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   const [impMsgs] = useRecoilState(ImportantMessages)
   const [imgDisplay, setImgDisplay] = useState('none')
   const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
+  const [tintColor] = useRecoilState(TintColor)
 
   useEffect(() => {
     const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
@@ -101,7 +102,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   }
 
   return(
-    <TouchableRipple onPress={onClick} onLongPress={toggleImportant} rippleColor={Colors[colorScheme].rippleColor} style={{backgroundColor: important ? Colors[colorScheme].important : 'transparent'}}>
+    <TouchableRipple onPress={onClick} onLongPress={toggleImportant} rippleColor={Colors[colorScheme].rippleColor} style={{backgroundColor: important ? Colors.customThemes[tintColor][colorScheme].important : 'transparent'}}>
       <View style={styles.container}>
 
           <View style={styles.leftContainer}>
@@ -109,7 +110,7 @@ const ChatListItem = (props: ChatListItemProps) => {
             {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
             {(user.imageUri == 'none' || imgDisplay == 'none') &&
               <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
-                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.light.tint : Colors.dark.tabs} />
+                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
               </View>
             }
 

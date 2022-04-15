@@ -10,12 +10,15 @@ import { View, Text } from '../components/Themed';
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { listUsers } from "../src/graphql/queries";
 import { onCreateUser } from "../src/graphql/subscriptions";
+import { useRecoilState } from "recoil";
+import { TintColor } from "../atoms/HelperStates";
 
 export default function ChatScreen() {
 
   const colorScheme = useColorScheme();
   const[users, setUsers] = useState([])
   const [prompt, setPrompt] = useState(false)
+  const [tintColor] = useRecoilState(TintColor)
 
   useEffect(() => {
     const fetchUsers = (async() => {
@@ -43,7 +46,7 @@ export default function ChatScreen() {
   },[])
 
   if(!prompt)
-    return(<ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>)
+    return(<ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors.customThemes[tintColor]['light'].tint : Colors.customThemes[tintColor].dark.tabs} style={styles.loading}/>)
 
   return (
     <View style={styles.container}>

@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     bottom: 30,
-    right: 30
+    right: 30,
+    elevation: 10
   }
 })
 

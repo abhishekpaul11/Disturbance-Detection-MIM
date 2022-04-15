@@ -17,6 +17,7 @@ import Colors from "../../constants/Colors";
 import useColorScheme from '../../hooks/useColorScheme';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import db from '../../firebase';
+import { TintColor } from "../../atoms/HelperStates";
 
 export type ChatMessageProps = {
   message: Message
@@ -50,6 +51,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isSpam, setSpam] = useState(message.isSpam)
   const feedbackSent = useRef(false)
   const [msgMargin, setMsgMargin] = useState(5)
+  const [tintColor] = useRecoilState(TintColor)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -246,21 +248,21 @@ const ChatMessage = (props: ChatMessageProps) => {
     <View style = {styles.container}>
       <View opacity={opacity} width={message.isImage ? imgWidth : textWidth} style = {
         [styles.messageBox,{
-          backgroundColor: isMyMessage() ? Colors[colorScheme].tintFaded : colorScheme == 'light' ? 'white' : '#424949',
+          backgroundColor: isMyMessage() ? Colors.customThemes[tintColor][colorScheme].tintFaded : colorScheme == 'light' ? 'white' : '#424949',
           marginRight: isMyMessage() ? msgMargin : 55 - msgMargin,
           marginLeft: isMyMessage() ? 55 - msgMargin : msgMargin,
           alignSelf: isMyMessage() ? 'flex-end' : 'flex-start',
           padding: message.isImage ? 5 : textPadding,
           borderWidth: msgImp ? 2 : 0,
-          borderColor: Colors[colorScheme].msgBorder
+          borderColor: Colors.customThemes[tintColor][colorScheme].msgBorder
         }]}>
         <GestureRecognizer onSwipeLeft={() => sendFeedback('left')} onSwipeRight={() => sendFeedback('right')}>
           <Pressable onPress={() => handleMsg(message)} onLongPress={() => toggleImportant(msgImp)}>
-            {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5, color: Colors[colorScheme].name}] : [styles.name,{color: Colors[colorScheme].name}]}>{message.user.name}</Text>}
+            {removeMsg && !isMyMessage() && <Text style={message.isImage ? [styles.name,{marginLeft: 5, color: Colors.customThemes[tintColor][colorScheme].name}] : [styles.name,{color: Colors[colorScheme].name}]}>{message.user.name}</Text>}
             <View>
               {message.isImage ?
                 <View>
-                  {loading && <ActivityIndicator style={styles.activityIndicator} color={Colors[colorScheme].msgBorder} size={'large'}/>}
+                  {loading && <ActivityIndicator style={styles.activityIndicator} color={Colors.customThemes[tintColor][colorScheme].msgBorder} size={'large'}/>}
                   <Image source={{uri: uri}} onLoadEnd={displayImage} style={styles.image} backgroundColor={imgBackground} aspectRatio={aspectRatio} resizeMode='cover' maxHeight={maxHeight} />
                 </View>
               :

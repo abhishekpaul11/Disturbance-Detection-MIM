@@ -14,3 +14,8 @@ export const UserData = atom({
   key: 'UserData',
   default: {}
 })
+
+export const TintColor = atom({
+  key: 'TintColor',
+  default: 'blue'
+})

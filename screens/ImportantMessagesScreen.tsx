@@ -7,6 +7,7 @@ import { batchGetMessages } from "../src/graphql/queries";
 import ChatMessage from "../components/ChatMessage";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
+import { TintColor } from "../atoms/HelperStates";
 
 import { Text, View } from '../components/Themed';
 
@@ -18,6 +19,7 @@ export default function ImportantMessagesScreen() {
   const [messages, setMessages] = useState(['empty'])
   const [workMode] = useRecoilState(workmode)
   const active = useRef({current: true})
+  const [tintColor] = useRecoilState(TintColor)
 
   useEffect(() => {
     const getID = (async() => {
@@ -66,7 +68,7 @@ export default function ImportantMessagesScreen() {
   if(messages[0] === 'empty')
     return(
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors['light'].tint : Colors.dark.tabs} style={styles.loading}/>
+        <ActivityIndicator size={'large'} color={colorScheme == 'light' ? Colors.customThemes[tintColor]['light'].tint : Colors.customThemes[tintColor].dark.tabs} style={styles.loading}/>
       </View>
     )
 

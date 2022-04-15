@@ -12,6 +12,8 @@ import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createChatRoom, createChatRoomUser } from "../../src/graphql/mutations";
 import { getChatUsers } from "../../src/graphql/queries";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
+import { useRecoilState } from "recoil";
+import { TintColor } from "../../atoms/HelperStates";
 
 const ContactListItem = (props: ContactListItemProps) => {
   const { data } = props
@@ -19,6 +21,7 @@ const ContactListItem = (props: ContactListItemProps) => {
   const [imgDisplay, setImgDisplay] = useState('none')
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  const [tintColor] = useRecoilState(TintColor)
   var flag = true
 
   const openChat = (chatRoomID, users, name, isImportant, chatRoomUser, id) => {
@@ -110,7 +113,7 @@ const ContactListItem = (props: ContactListItemProps) => {
             {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
             {(user.imageUri == 'none' || imgDisplay == 'none') &&
               <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
-                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.light.tint : Colors.dark.tabs} />
+                <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
               </View>
             }
 

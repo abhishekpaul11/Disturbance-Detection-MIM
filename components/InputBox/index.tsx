@@ -4,7 +4,7 @@ import styles from "./styles";
 import moment from "moment";
 import { MaterialCommunityIcons, FontAwesome5, Entypo, Ionicons, MaterialIcons, Octicons, AntDesign } from "@expo/vector-icons";
 import EmojiSelector, { Categories} from 'react-native-emoji-selector'
-import { Emoji } from "../../atoms/HelperStates";
+import { Emoji, TintColor } from "../../atoms/HelperStates";
 import Colors from "../../constants/Colors";
 import useColorScheme from '../../hooks/useColorScheme';
 
@@ -29,6 +29,7 @@ const InputBox = (props) => {
   const [counter, setCounter] = useState(1)
   const [emojiCheck] = useRecoilState(Emoji)
   const [impLock, setImpLock] = useRecoilState(ImpLock)
+  const [tintColor] = useRecoilState(TintColor)
   var shouldScroll = !isFirst
 
   getEmoji(emoji)
@@ -199,7 +200,7 @@ const InputBox = (props) => {
   return (
     <View>
       <View style={styles.container}>
-        <View style={[styles.mainContainer,{borderColor: colorScheme == 'light' ? Colors.light.tint : 'transparent', backgroundColor: Colors[colorScheme].keypad}]}>
+        <View style={[styles.mainContainer,{borderColor: colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : 'transparent', backgroundColor: Colors[colorScheme].keypad}]}>
           {emoji
           ? emojiSearch
             ? <TouchableOpacity onPress={endSearch}>
@@ -232,7 +233,7 @@ const InputBox = (props) => {
           }
         </View>
         <TouchableOpacity onPress={onPress}>
-          <View style={[styles.buttonContainer, {backgroundColor: Colors['light'].tint}]}>
+          <View style={[styles.buttonContainer, {backgroundColor: Colors.customThemes[tintColor]['light'].tint}]}>
             {
               !message
               ? <MaterialCommunityIcons name='microphone' size={28} color={'white'} />
@@ -245,7 +246,7 @@ const InputBox = (props) => {
         <EmojiSelector
           category = {emojiCheck ? Categories.history : Categories.emotion}
           onEmojiSelected={(emoji) => handleEmoji(emoji)}
-          theme = {emojiSearch ? 'transparent' : colorScheme == 'light' ? Colors.light.tint : 'black'}
+          theme = {emojiSearch ? 'transparent' : colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : 'black'}
           showHistory = {true}
           columns = {10}
           placeholder = {'Search'}
