@@ -22,7 +22,7 @@ const App = () => {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [user, setUser] = useState(null)
-  LogBox.ignoreLogs(['Setting a timer']);
+  LogBox.ignoreLogs(['Setting a timer', 'Non-serializable values were found in the navigation state']);
 
   //run this snippet only when App is first mounted
   useEffect(() => {
@@ -40,7 +40,8 @@ const App = () => {
             id: userDetails.id,
             name: userDetails.name,
             imageUri: userDetails.imageUri,
-            status: userDetails.status
+            status: userDetails.status,
+            vdoCats: userDetails.videoCats
           })
           console.log('User is already present in database')
           return
@@ -51,7 +52,8 @@ const App = () => {
           id: userInfo.attributes.sub,
           name: userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1),
           imageUri: 'none',
-          status: 'Focusing'
+          status: 'Focusing',
+          videoCats: ['Education'] // allowing only educational YT videos by default
         }
         setUser(newUser)
         await API.graphql(graphqlOperation(createUser, {

@@ -3,6 +3,7 @@ import { View, Text, Image } from "react-native";
 import { ChatListItemProps } from "../../types";
 import styles from "./style";
 import moment from "moment";
+import { Storage } from "aws-amplify";
 import Colors from '../../constants/Colors';
 import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
@@ -31,6 +32,16 @@ const ChatListItem = (props: ChatListItemProps) => {
   const [imgDisplay, setImgDisplay] = useState('none')
   const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
   const [tintColor] = useRecoilState(TintColor)
+  const [avatar, setAvatar] = useState('none')
+
+  useEffect(() => {
+    const fetchAvatar = (async() => {
+      if(user && user.imageUri != 'none'){
+        const url = await Storage.get(user.imageUri)
+        setAvatar(url)
+      }
+    })()
+  },[user])
 
   useEffect(() => {
     const otherUser = chatRoom.chatRoomUser.items.filter((elem) => (elem.user.id != myID))
@@ -107,8 +118,8 @@ const ChatListItem = (props: ChatListItemProps) => {
 
           <View style={styles.leftContainer}>
 
-            {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
-            {(user.imageUri == 'none' || imgDisplay == 'none') &&
+            {avatar != 'none' && <Image source={{uri: avatar}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
+            {(avatar == 'none' || imgDisplay == 'none') &&
               <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
                 <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
               </View>

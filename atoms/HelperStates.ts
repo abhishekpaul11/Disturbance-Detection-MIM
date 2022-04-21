@@ -19,3 +19,8 @@ export const TintColor = atom({
   key: 'TintColor',
   default: 'blue'
 })
+
+export const AvatarLock = atom({
+  key: 'AvatarLock',
+  default: false
+})

@@ -24,6 +24,7 @@ export const createUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -51,6 +52,7 @@ export const updateUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -78,6 +80,7 @@ export const deleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -102,6 +105,7 @@ export const createChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -151,6 +155,7 @@ export const updateChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -200,6 +205,7 @@ export const deleteChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -276,6 +282,7 @@ export const createChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -338,6 +345,7 @@ export const updateChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -400,6 +408,7 @@ export const deleteChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -438,6 +447,7 @@ export const createMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -489,6 +499,7 @@ export const updateMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -540,6 +551,7 @@ export const deleteMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }

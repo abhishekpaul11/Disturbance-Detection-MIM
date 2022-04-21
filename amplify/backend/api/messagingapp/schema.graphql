@@ -5,6 +5,7 @@ type User @model {
   status: String
   impMessages: [ID]
   chatRoomUser: [ChatRoomUser] @connection(keyName: "byUser", fields: ["id"])
+  videoCats: [String]
 }
 
 type ChatRoomUser

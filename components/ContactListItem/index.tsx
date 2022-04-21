@@ -7,6 +7,7 @@ import useColorScheme from '../../hooks/useColorScheme';
 import { useNavigation } from "@react-navigation/native";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from '@expo/vector-icons';
+import { Storage } from "aws-amplify";
 
 import { API, graphqlOperation, Auth } from "aws-amplify";
 import { createChatRoom, createChatRoomUser } from "../../src/graphql/mutations";
@@ -22,7 +23,17 @@ const ContactListItem = (props: ContactListItemProps) => {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const [tintColor] = useRecoilState(TintColor)
+  const [avatar, setAvatar] = useState('none')
   var flag = true
+
+  useEffect(() => {
+    const fetchAvatar = (async() => {
+      if(user && user.imageUri != 'none'){
+        const url = await Storage.get(user.imageUri)
+        setAvatar(url)
+      }
+    })()
+  },[user])
 
   const openChat = (chatRoomID, users, name, isImportant, chatRoomUser, id) => {
     navigation.navigate('ChatRoom',{
@@ -110,8 +121,8 @@ const ContactListItem = (props: ContactListItemProps) => {
       <View style={styles.container}>
           <View style={styles.leftContainer}>
 
-            {user.imageUri != 'none' && <Image source={{uri: user.imageUri}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
-            {(user.imageUri == 'none' || imgDisplay == 'none') &&
+            {avatar != 'none' && <Image source={{uri: avatar}} style={[styles.avatar, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
+            {(avatar == 'none' || imgDisplay == 'none') &&
               <View style={[styles.avatar, {backgroundColor: Colors[colorScheme].contactBackground}]}>
                 <Ionicons name="person" size={30} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
               </View>

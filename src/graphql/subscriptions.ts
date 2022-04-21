@@ -21,6 +21,7 @@ export const onMessageCreatedByChatRoomID = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -69,6 +70,7 @@ export const onIncomingMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -114,6 +116,7 @@ export const onChatRoomUserCreatedByUserID = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -163,6 +166,7 @@ export const onUserUpdatedByUserID = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -187,6 +191,7 @@ export const onCreateUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -211,6 +216,7 @@ export const onUpdateUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -235,6 +241,7 @@ export const onDeleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -256,6 +263,7 @@ export const onCreateChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -302,6 +310,7 @@ export const onUpdateChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -348,6 +357,7 @@ export const onDeleteChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -421,6 +431,7 @@ export const onCreateChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -480,6 +491,7 @@ export const onUpdateChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -539,6 +551,7 @@ export const onDeleteChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -574,6 +587,7 @@ export const onCreateMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -622,6 +636,7 @@ export const onUpdateMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -670,6 +685,7 @@ export const onDeleteMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }

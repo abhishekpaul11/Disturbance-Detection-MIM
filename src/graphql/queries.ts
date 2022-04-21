@@ -21,6 +21,7 @@ export const batchGetMessages = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -69,6 +70,7 @@ export const getUser = /* GraphQL */ `
         }
         nextToken
       }
+      videoCats
       createdAt
       updatedAt
     }
@@ -168,6 +170,7 @@ export const listUsers = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -191,6 +194,7 @@ export const getChatRoomUser = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -239,6 +243,7 @@ export const listChatRoomUsers = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -298,6 +303,7 @@ export const getChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -366,6 +372,7 @@ export const getMessage = /* GraphQL */ `
         chatRoomUser {
           nextToken
         }
+        videoCats
         createdAt
         updatedAt
       }
@@ -416,6 +423,7 @@ export const listMessages = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }
@@ -462,6 +470,7 @@ export const messagesByChatRoom = /* GraphQL */ `
           imageUri
           status
           impMessages
+          videoCats
           createdAt
           updatedAt
         }

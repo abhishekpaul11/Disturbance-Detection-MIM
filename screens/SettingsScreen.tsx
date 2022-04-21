@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Image } from "react-native";
 import { View, Text } from '../components/Themed';
 import { UserData } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
+import { Storage } from "aws-amplify";
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import Colors from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
@@ -17,22 +18,34 @@ const SettingsScreen = () => {
    const [imgDisplay, setImgDisplay] = useState('none')
    const navigation = useNavigation();
    const [tintColor] = useRecoilState(TintColor)
+   const [avatar, setAvatar] = useState('none')
+
+   useEffect(() => {
+     const fetchAvatar = (async() => {
+       if(userData && userData.imageUri != 'none'){
+         const url = await Storage.get(userData.imageUri)
+         setAvatar(url)
+       }
+     })()
+   },[])
 
    return (
      <View style={styles.container}>
 
-        <View style={[styles.topBar, {borderBottomColor: Colors[colorScheme].settingsSeparator}]}>
-          {userData.imageUri != 'none' && <Image source={{uri: userData.imageUri}} style={[styles.image, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
-          {(userData.imageUri == 'none' || imgDisplay == 'none') &&
-            <View style={[styles.image, {backgroundColor: Colors[colorScheme].contactBackground}]}>
-              <Ionicons name="person" size={36} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
+        <TouchableRipple onPress={() => {navigation.navigate('EditDetailsScreen', {setSettingsAvatar: setAvatar})}} rippleColor={Colors[colorScheme].rippleColor}>
+          <View style={[styles.topBar, {borderBottomColor: Colors[colorScheme].settingsSeparator}]}>
+            {avatar != 'none' && <Image source={{uri: avatar}} style={[styles.image, { display: imgDisplay }]} onLoad={() => setImgDisplay('flex')}/>}
+            {(avatar == 'none' || imgDisplay == 'none') &&
+              <View style={[styles.image, {backgroundColor: Colors[colorScheme].contactBackground}]}>
+                <Ionicons name="person" size={36} color={colorScheme == 'light' ? Colors.customThemes[tintColor].light.tint : Colors.customThemes[tintColor].dark.tabs} />
+              </View>
+            }
+            <View style={styles.textBox}>
+              <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>{userData.name}</Text>
+              <Text style={[styles.status, {color: Colors[colorScheme].settingsSecondary}]} numberOfLines={1} ellipsizeMode={'tail'}>{userData.status}</Text>
             </View>
-          }
-          <View style={styles.textBox}>
-            <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>{userData.name}</Text>
-            <Text style={[styles.status, {color: Colors[colorScheme].settingsSecondary}]} numberOfLines={1} ellipsizeMode={'tail'}>{userData.status}</Text>
           </View>
-        </View>
+        </TouchableRipple>
 
         <TouchableRipple onPress={() => {navigation.navigate('TintColorScreen')}} rippleColor={Colors[colorScheme].rippleColor}>
           <View style={styles.optionBar}>
@@ -82,7 +95,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     width: '100%',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    backgroundColor: 'transparent'
   },
   image: {
     height: 70,
@@ -94,7 +108,8 @@ const styles = StyleSheet.create({
   textBox: {
     padding: 15,
     justifyContent: 'space-around',
-    flex: 1
+    flex: 1,
+    backgroundColor: 'transparent'
   },
   name: {
     fontSize: 20

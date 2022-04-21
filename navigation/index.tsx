@@ -18,13 +18,14 @@ import ContactsScreen from "../screens/ContactsScreen";
 import ImageFullScreen from "../screens/ImageFullScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import TintColorScreen from "../screens/TintColorScreen";
+import EditDetailsScreen from "../screens/EditDetailsScreen";
 import { RootStackParamList } from '../types';
 import MainTabNavigator from './MainTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
 import { Octicons, MaterialCommunityIcons, MaterialIcons, Fontisto, Ionicons } from "@expo/vector-icons";
 import { workmode, ImportantChats, UnimportantChats, Refresh, StarLock, isImportant, SentMessages, ImportantMessages, ImpLock} from "../atoms/WorkMode";
-import { Emoji, UserData, TintColor } from "../atoms/HelperStates";
+import { Emoji, UserData, TintColor, AvatarLock } from "../atoms/HelperStates";
 import Toast from 'react-native-root-toast';
 import { updateChatRoomUser, updateUser } from "../src/graphql/mutations";
 
@@ -59,6 +60,7 @@ function RootNavigator() {
   const [, setSentMsgs] = useRecoilState(SentMessages)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [impLock] = useRecoilState(ImpLock)
+  const [avatarLock] = useRecoilState(AvatarLock)
   const [emoji, setEmoji] = useRecoilState(Emoji)
   const colorScheme = useColorScheme()
   const [tintColor] = useRecoilState(TintColor)
@@ -235,6 +237,21 @@ function RootNavigator() {
       component={TintColorScreen}
       options={() => ({
         title: 'Tint Color'
+      })}
+    />
+    <Stack.Screen
+      name="EditDetailsScreen"
+      component={EditDetailsScreen}
+      options={({ navigation }) => ({
+        title: 'Edit Profile',
+        headerLeft: () => (
+          <HeaderBackButton tintColor={'white'} onPress={() => {
+              if(!avatarLock){
+                navigation.goBack()
+              }
+            }}
+          />
+        )
       })}
     />
     <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
