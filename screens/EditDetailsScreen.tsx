@@ -33,7 +33,6 @@ const EditDetailsScreen = ({ route }) => {
   const [bubbleColor, setBubbleColor] = useState('transparent')
   const [percentage, setPercentage] = useState(-1)
   const [snapLock, setSnapLock] = useState(true)
-  const [hardwareBackPress, setHardwareBackPress] = useState(true)
   const snapPoint = useRef(-1)
   const url = useRef('')
 
@@ -107,24 +106,27 @@ const EditDetailsScreen = ({ route }) => {
     if(avatar == url.current) displayToast('Profile Updated')
   }
 
+  const hardwareBackPress = () => {
+    if(!avatarLock) navigation.goBack()
+    return true
+  }
+
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => hardwareBackPress);
+    BackHandler.addEventListener('hardwareBackPress', hardwareBackPress);
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', () => hardwareBackPress);
+      BackHandler.removeEventListener('hardwareBackPress', hardwareBackPress);
     };
-  },[hardwareBackPress]);
+  },[avatarLock]);
 
   const updateImage = async() => {
     route.params.setSettingsAvatar(avatar)
     setPercentage(0)
     setSnapLock(false)
     bottomSheetRef?.current?.snapToIndex(0)
-    setHardwareBackPress(false)
     setAvatarLock(true)
     const img = await fetchImageFromUri(avatar)
     await uploadImage(userData.imageUri,img)
     setAvatarLock(false)
-    setHardwareBackPress(true)
     bottomSheetRef?.current?.close()
     setSnapLock(true)
     setPercentage(-1)
@@ -203,7 +205,7 @@ const EditDetailsScreen = ({ route }) => {
         <View style={[styles.dataItem, {top: 20, alignItems: 'flex-start'}]}>
           <Feather name="youtube" size={30} style = {{top: 15}} color={Colors.customThemes[tintColor].dark.settingsIcons} />
           <View style={[styles.textBox, {flex: 1}]}>
-            <Text style={[styles.title, {color: Colors.customThemes[tintColor].dark.settingsIcons, marginBottom: 8}]}>{'Youtube Allowed Categories'}</Text>
+            <Text style={[styles.title, {color: Colors.customThemes[tintColor].dark.settingsIcons, marginBottom: 8}]}>{'Youtube Restricted Categories'}</Text>
 
             {[['Games', 'Entertainment'], ['Education', 'Sports']].map((row) =>
               <View key={row} style={{flexDirection: 'row'}}>

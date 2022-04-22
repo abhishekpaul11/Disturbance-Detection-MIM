@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image, Alert } from "react-native";
+import { StyleSheet, Image, Alert, BackHandler } from "react-native";
 import { View, Text } from '../components/Themed';
 import { UserData } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
@@ -30,6 +30,18 @@ const SettingsScreen = () => {
        }
      })()
    },[])
+
+   const handleBackButtonClick = () => {
+     navigation.goBack()
+     return true
+   }
+
+   useEffect(() => {
+     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+     return () => {
+       BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+     };
+   },[]);
 
    return (
      <View style={styles.container}>

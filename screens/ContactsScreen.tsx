@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, BackHandler } from 'react-native';
 import ContactListItem from "../components/ContactListItem";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
+import { useNavigation } from "@react-navigation/native";
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { View, Text } from '../components/Themed';
@@ -16,9 +17,22 @@ import { TintColor } from "../atoms/HelperStates";
 export default function ChatScreen() {
 
   const colorScheme = useColorScheme();
+  const navigation = useNavigation()
   const[users, setUsers] = useState([])
   const [prompt, setPrompt] = useState(false)
   const [tintColor] = useRecoilState(TintColor)
+
+  const handleBackButtonClick = () => {
+    navigation.goBack()
+    return true
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    };
+  },[]);
 
   useEffect(() => {
     const fetchUsers = (async() => {

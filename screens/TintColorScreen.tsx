@@ -1,23 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Pressable, Text } from "react-native";
+import { StyleSheet, Pressable, Text, BackHandler } from "react-native";
 import { View } from '../components/Themed';
 import Colors from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 import { TintColor } from "../atoms/HelperStates";
 import PreviewScreen from "../components/PreviewScreen";
 import { useRecoilState } from "recoil";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons, Feather} from '@expo/vector-icons';
 import useColorScheme from '../hooks/useColorScheme';
 
 const TintColorScreen = () => {
 
   const systemColorScheme = useColorScheme()
+  const navigation = useNavigation()
   const [colorScheme, setColorScheme] = useState(systemColorScheme)
   const [mode, toggleMode] = useState(systemColorScheme)
   const [tintColor, setTintColor] = useRecoilState(TintColor)
   const [heightArray, setHeightArray] = useState([60, 60, 60, 60, 60])
   const [darkColor, setDarkColor] = useState(systemColorScheme == 'dark' ? '#9897a9' : '#00000060')
   const [lightColor, setLightColor] = useState(systemColorScheme == 'dark' ? '#9897a9' : '#00000060')
+
+  const handleBackButtonClick = () => {
+    navigation.goBack()
+    return true
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    };
+  },[]);
 
   const initHeightArray = (index) => {
     var newHeightArray = []

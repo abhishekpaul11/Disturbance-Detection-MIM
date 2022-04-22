@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, BackHandler } from 'react-native';
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
@@ -48,6 +49,20 @@ export default function ChatScreen() {
      }
      catch(e) { console.log(e) }
   })
+
+  const handleBackButtonClick = () => {
+    BackHandler.exitApp()
+    return true
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     if(userUpdate){

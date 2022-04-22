@@ -1,20 +1,36 @@
 import * as React from 'react';
-import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, BackHandler } from 'react-native';
 import ChatListItem from "../components/ChatListItem";
 import { ImportantChats, workmode } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
 import { TintColor } from "../atoms/HelperStates";
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Text, View } from '../components/Themed';
 
 export default function ImportantContactsScreen() {
 
   const colorScheme = useColorScheme()
+  const navigation = useNavigation()
   const [workMode] = useRecoilState(workmode)
   const [impChats] = useRecoilState(ImportantChats)
   const [tintColor] = useRecoilState(TintColor)
+
+  const handleBackButtonClick = () => {
+    navigation.navigate('Chats', { screen: 'ChatScreen'})
+    return true
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+      };
+    }, [])
+  );
 
   if(!workMode)
     return (

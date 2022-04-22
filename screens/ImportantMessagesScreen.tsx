@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { StyleSheet, ActivityIndicator, FlatList, BackHandler } from 'react-native';
 import { ImportantMessages, workmode } from "../atoms/WorkMode";
 import { useRecoilState } from "recoil";
 import { Auth, API, graphqlOperation } from 'aws-amplify'
@@ -8,18 +8,34 @@ import ChatMessage from "../components/ChatMessage";
 import Colors from "../constants/Colors";
 import useColorScheme from '../hooks/useColorScheme';
 import { TintColor } from "../atoms/HelperStates";
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Text, View } from '../components/Themed';
 
 export default function ImportantMessagesScreen() {
 
   const colorScheme = useColorScheme()
+  const navigation = useNavigation()
   const [importantMessages] = useRecoilState(ImportantMessages)
   const [myID, setMyID] = useState(null)
   const [messages, setMessages] = useState(['empty'])
   const [workMode] = useRecoilState(workmode)
   const active = useRef({current: true})
   const [tintColor] = useRecoilState(TintColor)
+
+  const handleBackButtonClick = () => {
+    navigation.navigate('Chats', { screen: 'ChatScreen'})
+    return true
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     const getID = (async() => {
