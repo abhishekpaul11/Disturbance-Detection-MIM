@@ -43,6 +43,7 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-autolink": "^4.0.0",
+    "react-native-awesome-alerts": "^1.5.2",
     "react-native-emoji-selector": "^0.2.0",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-pager-view": "^5.4.0",

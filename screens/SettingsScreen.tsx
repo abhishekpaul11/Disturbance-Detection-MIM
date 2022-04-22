@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, Alert } from "react-native";
 import { View, Text } from '../components/Themed';
 import { UserData } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
-import { Storage } from "aws-amplify";
+import { Storage, Auth } from "aws-amplify";
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import Colors from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import AwesomeAlert from 'react-native-awesome-alerts';
 import useColorScheme from '../hooks/useColorScheme';
 import { TintColor } from "../atoms/HelperStates";
 
@@ -19,6 +20,7 @@ const SettingsScreen = () => {
    const navigation = useNavigation();
    const [tintColor] = useRecoilState(TintColor)
    const [avatar, setAvatar] = useState('none')
+   const [showAlert, setShowAlert] = useState(false)
 
    useEffect(() => {
      const fetchAvatar = (async() => {
@@ -73,13 +75,39 @@ const SettingsScreen = () => {
           </View>
         </View>
 
-        <View style={styles.optionBar}>
-          <FontAwesome name="sign-out" size={35} color={Colors.customThemes[tintColor][colorScheme].settingsIcons} />
-          <View style={styles.optionText}>
-            <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{'Sign Out'}</Text>
-            <Text style={[styles.subTitle, {color: Colors[colorScheme].settingsSecondary}]} numberOfLines={1} ellipsizeMode={'tail'}>{'Logout from your account'}</Text>
+        <TouchableRipple onPress={() => setShowAlert(true)} rippleColor={Colors[colorScheme].rippleColor}>
+          <View style={styles.optionBar}>
+            <FontAwesome name="sign-out" size={35} color={Colors.customThemes[tintColor][colorScheme].settingsIcons} />
+            <View style={styles.optionText}>
+              <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{'Sign Out'}</Text>
+              <Text style={[styles.subTitle, {color: Colors[colorScheme].settingsSecondary}]} numberOfLines={1} ellipsizeMode={'tail'}>{'Logout from your account'}</Text>
+            </View>
           </View>
-        </View>
+        </TouchableRipple>
+
+        <AwesomeAlert
+           show={showAlert}
+           showProgress={false}
+           title="Sign Out"
+           message="Are you sure? Once signed out, you need your credentials to login again."
+           closeOnTouchOutside={true}
+           closeOnHardwareBackPress={true}
+           showCancelButton={true}
+           showConfirmButton={true}
+           cancelText="NO"
+           confirmText="YES"
+           onDismiss = {() => setShowAlert(false)}
+           onCancelPressed = {() => setShowAlert(false)}
+           onConfirmPressed = {() => Auth.signOut()}
+           contentContainerStyle = {[styles.alertContainer, {backgroundColor: colorScheme == 'dark' ? '#33414b' : 'white'}]}
+           contentStyle = {{padding: 0}}
+           titleStyle = {[styles.alertTitle, {color: Colors[colorScheme].text}]}
+           messageStyle = {[styles.alertMessage, {color: colorScheme == 'dark' ? '#ccc' : 'black'}]}
+           cancelButtonStyle = {[styles.alertButton, {backgroundColor: Colors.customThemes[tintColor][colorScheme].tintFaded}]}
+           confirmButtonStyle = {[styles.alertButton, {backgroundColor: colorScheme == 'dark' ? Colors.customThemes[tintColor][colorScheme].settingsIcons : Colors.customThemes[tintColor][colorScheme].tint}]}
+           cancelButtonTextStyle = {styles.alertButtonText}
+           confirmButtonTextStyle = {styles.alertButtonText}
+         />
 
      </View>
    )
@@ -141,6 +169,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent'
   },
+  alertContainer: {
+    backgroundColor: 'black',
+    borderRadius: 15,
+    paddingTop: 15,
+    paddingBottom: 25
+  },
+  alertTitle: {
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  alertMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 5
+  },
+  alertButton: {
+    width: 80,
+    height: 34,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  alertButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
 })
 
 export default SettingsScreen
