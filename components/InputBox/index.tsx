@@ -62,6 +62,14 @@ const InputBox = (props) => {
     catch(e) { console.log(e) }
   }
 
+  const getCategories = (categoryMap) => {
+    var cats = []
+    Object.keys(categoryMap).forEach((key) => {
+      if(categoryMap[key] == 1) cats.push(key)
+    });
+    return cats
+  }
+
   const checkSpam = (message) => {
     return new Promise(async(resolve, reject) => {
       message = message.replace(/\s+/g, '+')
@@ -81,11 +89,12 @@ const InputBox = (props) => {
             promises.push(new Promise(async(resolve) => {
               const result = await fetch('https://im-youtube.herokuapp.com/predict?t='+code)
               const ans = await result.json()
-              resolve(ans.results.results)
+              resolve(getCategories(ans.results))
             }))
           })
           Promise.all(promises).then(results => {
-            resolve(results.some(result => result == 1) ? 1 : 0)
+            const combinedRes = results.reduce((prev, curr) => prev.concat(curr))
+            resolve([...new Set(combinedRes)]) //removing duplicates
           })
         }
       }
@@ -112,14 +121,16 @@ const InputBox = (props) => {
       shouldScroll = true
       try {
         checkSpam(message.trim()).then(async(result) => {
-          const spam = result
+          const spam = result.constructor === Array ? null : result === 1
+          const vdoCats = result.constructor === Array ? result : null
           const sentMessage = await API.graphql(graphqlOperation(createMessage, {
             input: {
               content: message.trim(),
               userID: myUserID,
               chatRoomID,
               isImage: false,
-              isSpam: spam === 1
+              isSpam: spam,
+              videoCats: vdoCats
             }
           }))
           updateChatRoomLastMessage(sentMessage.data.createMessage.id)

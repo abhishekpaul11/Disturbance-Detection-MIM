@@ -10,7 +10,7 @@ import { Auth, API, graphqlOperation } from 'aws-amplify'
 import { getChatListItem } from "../src/graphql/queries";
 import { onMessageCreatedByChatRoomID, onChatRoomUserCreatedByUserID } from "../src/graphql/subscriptions";
 import { ImportantChats, UnimportantChats, workmode, Refresh, StarLock, ImportantMessages } from "../atoms/WorkMode";
-import { UserUpdate, TintColor } from "../atoms/HelperStates";
+import { UserUpdate, TintColor, UserData } from "../atoms/HelperStates";
 import { useRecoilState } from "recoil";
 
 
@@ -29,6 +29,8 @@ export default function ChatScreen() {
   const [starLock, setStarLock] = useRecoilState(StarLock)
   const [impMsgs, setImpMsgs] = useRecoilState(ImportantMessages)
   const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
+  const [userData, setUserData] = useRecoilState(UserData)
+  const [vdoCats, setVdoCats] = useState(userData.vdoCats)
   const subscriptions = []
   const [tintColor] = useRecoilState(TintColor)
 
@@ -63,6 +65,14 @@ export default function ChatScreen() {
       };
     }, [])
   );
+
+  useEffect(() => {
+    if(prompt && (userData.vdoCats != vdoCats)){
+      setPrompt(false)
+      setVdoCats(userData.vdoCats)
+      fetchChatRooms()
+    }
+  }, [userData])
 
   useEffect(() => {
     if(userUpdate){

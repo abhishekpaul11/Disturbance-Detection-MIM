@@ -126,6 +126,7 @@ export const createChatRoomUser = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -176,6 +177,7 @@ export const updateChatRoomUser = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -226,6 +228,7 @@ export const deleteChatRoomUser = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -263,6 +266,7 @@ export const createChatRoom = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         nextToken
@@ -276,6 +280,7 @@ export const createChatRoom = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name
@@ -326,6 +331,7 @@ export const updateChatRoom = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         nextToken
@@ -339,6 +345,7 @@ export const updateChatRoom = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name
@@ -389,6 +396,7 @@ export const deleteChatRoom = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         nextToken
@@ -402,6 +410,7 @@ export const deleteChatRoom = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name
@@ -438,6 +447,7 @@ export const createMessage = /* GraphQL */ `
       chatRoomID
       isImage
       isSpam
+      videoCats
       user {
         id
         name
@@ -468,6 +478,7 @@ export const createMessage = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -490,6 +501,7 @@ export const updateMessage = /* GraphQL */ `
       chatRoomID
       isImage
       isSpam
+      videoCats
       user {
         id
         name
@@ -520,6 +532,7 @@ export const updateMessage = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -542,6 +555,7 @@ export const deleteMessage = /* GraphQL */ `
       chatRoomID
       isImage
       isSpam
+      videoCats
       user {
         id
         name
@@ -572,6 +586,7 @@ export const deleteMessage = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt

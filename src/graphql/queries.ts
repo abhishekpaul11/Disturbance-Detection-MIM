@@ -12,6 +12,7 @@ export const batchGetMessages = /* GraphQL */ `
       chatRoomID
       isImage
       isSpam
+      videoCats
       user {
         id
         name
@@ -42,6 +43,7 @@ export const batchGetMessages = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -93,6 +95,7 @@ export const getChatListItem = /* GraphQL */ `
               isImage
               createdAt
               isSpam
+              videoCats
               user {
                 name
                 id
@@ -215,6 +218,7 @@ export const getChatRoomUser = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -284,6 +288,7 @@ export const getChatRoom = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         nextToken
@@ -297,6 +302,7 @@ export const getChatRoom = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name
@@ -344,6 +350,7 @@ export const listChatRooms = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -363,6 +370,7 @@ export const getMessage = /* GraphQL */ `
       chatRoomID
       isImage
       isSpam
+      videoCats
       user {
         id
         name
@@ -393,6 +401,7 @@ export const getMessage = /* GraphQL */ `
           chatRoomID
           isImage
           isSpam
+          videoCats
           updatedAt
         }
         createdAt
@@ -417,6 +426,7 @@ export const listMessages = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name
@@ -464,6 +474,7 @@ export const messagesByChatRoom = /* GraphQL */ `
         chatRoomID
         isImage
         isSpam
+        videoCats
         user {
           id
           name

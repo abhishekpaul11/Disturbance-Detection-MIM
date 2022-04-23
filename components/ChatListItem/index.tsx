@@ -12,7 +12,7 @@ import { TouchableRipple } from "react-native-paper";
 import Toast from 'react-native-root-toast';
 import { useRecoilState } from "recoil";
 import { ImportantChats, UnimportantChats, workmode, ImportantMessages } from "../../atoms/WorkMode";
-import { UserUpdate, TintColor } from "../../atoms/HelperStates";
+import { UserUpdate, TintColor, UserData } from "../../atoms/HelperStates";
 
 import { API, graphqlOperation } from "aws-amplify";
 import { onUserUpdatedByUserID } from "../../src/graphql/subscriptions";
@@ -33,6 +33,8 @@ const ChatListItem = (props: ChatListItemProps) => {
   const [userUpdate, setUserUpdate] = useRecoilState(UserUpdate)
   const [tintColor] = useRecoilState(TintColor)
   const [avatar, setAvatar] = useState('none')
+  const [userData, setUserData] = useRecoilState(UserData)
+  const [vdoCats, setVdoCats] = useState(userData.vdoCats)
 
   useEffect(() => {
     const fetchAvatar = (async() => {
@@ -72,8 +74,20 @@ const ChatListItem = (props: ChatListItemProps) => {
     else return moment(chatRoom.lastMessage.createdAt).format('h:mm a')
   }
 
+  const isBlockedVideo = () => {
+    if(chatRoom.lastMessage.videoCats == null) return false
+    var blockedCats = vdoCats
+    blockedCats = blockedCats.filter(cat => chatRoom.lastMessage.videoCats.indexOf(cat.toLowerCase()) == -1)
+    return blockedCats.length != vdoCats.length
+  }
+
+  const handleSpam = () => {
+    const isSpam = chatRoom.lastMessage.isSpam
+    return (isSpam != null && isSpam) || (isSpam == null && isBlockedVideo())
+  }
+
   const displayMessage = () => {
-    return workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? 'Message flagged as Distracting' : chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
+    return workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && handleSpam() ? 'Message flagged as Distracting' : chatRoom.lastMessage.isImage ? ' Photo' : chatRoom.lastMessage.content
   }
 
   const toggleImportant = () => {
@@ -134,8 +148,8 @@ const ChatListItem = (props: ChatListItemProps) => {
 
               <View style={styles.messageContainer}>
               {chatRoom.lastMessage.user.id === myID && <Text style={[styles.lastMessage, {color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>You: </Text>}
-                {!(workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam) && chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color={colorScheme == 'light' ? 'grey' : '#d0d3d4'} />}
-                <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && chatRoom.lastMessage.isSpam ? [styles.lastMessage,{flex: 1, fontStyle: 'italic', color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}] : [styles.lastMessage,{flex: 1, color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>{displayMessage()}</Text>
+                {!(workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && handleSpam()) && chatRoom.lastMessage.isImage && <FontAwesome name="photo" size={16} color={colorScheme == 'light' ? 'grey' : '#d0d3d4'} />}
+                <Text numberOfLines={1} ellipsizeMode={'tail'} style={workMode && !important && !impMsgs.includes(chatRoom.lastMessage.id) && handleSpam() ? [styles.lastMessage,{flex: 1, fontStyle: 'italic', color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}] : [styles.lastMessage,{flex: 1, color: colorScheme == 'light' ? 'grey' : '#d0d3d4'}]}>{displayMessage()}</Text>
               </View>
             </View>
 

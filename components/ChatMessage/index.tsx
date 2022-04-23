@@ -4,7 +4,7 @@ import Autolink from 'react-native-autolink';
 import moment from "moment";
 import styles from "./styles";
 import { API, graphqlOperation } from "aws-amplify";
-import { updateUser, updateMessage } from "../../src/graphql/mutations";
+import { updateUser, updateMessage, deleteMessage} from "../../src/graphql/mutations";
 import { useNavigation } from "@react-navigation/native";
 import { Storage } from "aws-amplify";
 import MyLinkPreview from "../MyLinkPreview/index";
@@ -17,7 +17,7 @@ import Colors from "../../constants/Colors";
 import useColorScheme from '../../hooks/useColorScheme';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import db from '../../firebase';
-import { TintColor } from "../../atoms/HelperStates";
+import { TintColor, UserData } from "../../atoms/HelperStates";
 
 export type ChatMessageProps = {
   message: Message
@@ -52,6 +52,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   const feedbackSent = useRef(false)
   const [msgMargin, setMsgMargin] = useState(5)
   const [tintColor] = useRecoilState(TintColor)
+  const [userData, setUserData] = useRecoilState(UserData)
+  const [vdoCats, setVdoCats] = useState(userData.vdoCats)
 
   const isMyMessage = () => {
     return message.user.id === id
@@ -210,21 +212,22 @@ const ChatMessage = (props: ChatMessageProps) => {
     if(workMode && !msgImp && message.id && ((isMyMessage() && direction == 'left') || (!isMyMessage() && direction == 'right'))){
       feedbackSent.current = true
       setMsgMargin(10)
-      const keyword = isSpam ? 'Removing' : 'Adding'
+      const isBlocked = (isSpam == null) ? isBlockedVideo() : isSpam
+      const keyword = isBlocked ? 'Removing' : 'Adding'
       displayToast(keyword + ' Flag...')
       setTimeout(() => { setMsgMargin(5) }, 250);
       await API.graphql(graphqlOperation(updateMessage, {
         input: {
           id: message.id,
-          isSpam: !isSpam
+          isSpam: !isBlocked
         }
       }))
       const path = message.isImage ? '/Image' : isYoutubeLink(message.content) ? '/Youtube' : '/Text'
       db.ref(path).child(message.id).set({
         message: message.content,
-        label: isSpam ? 0 : 1
+        label: isBlocked ? 0 : 1
       })
-      isSpam ? setSpam(false) : setSpam(true)
+      isBlocked ? setSpam(false) : setSpam(true)
       feedbackSent.current = false
     }
   }
@@ -236,7 +239,14 @@ const ChatMessage = (props: ChatMessageProps) => {
     return words.length != 0
   }
 
-  if(workMode && !isImp && !msgImp && isSpam && !visible){
+  const isBlockedVideo = () => {
+    if(message.videoCats == null) return false
+    var blockedCats = vdoCats
+    blockedCats = blockedCats.filter(cat => message.videoCats.indexOf(cat.toLowerCase()) == -1)
+    return blockedCats.length != vdoCats.length
+  }
+
+  if(workMode && !isImp && !msgImp && ((isSpam != null && isSpam) || (isSpam == null && isBlockedVideo())) && !visible){
     return(
       <Pressable onLongPress={show}>
         <SpamMessage isMyMessage={isMyMessage} timestamp={timestamp} name={message.user.name}/>

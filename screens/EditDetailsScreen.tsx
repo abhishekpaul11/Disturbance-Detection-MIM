@@ -210,7 +210,7 @@ const EditDetailsScreen = ({ route }) => {
             {[['Games', 'Entertainment'], ['Education', 'Sports']].map((row) =>
               <View key={row} style={{flexDirection: 'row'}}>
                 {row.map((cat) =>
-                  <Pressable key={cat} style={[styles.bubble, {backgroundColor: vdoCats.indexOf(cat) > -1 ? Colors.customThemes[tintColor].dark.settingsIcons: 'transparent'}]} onPress={() => toggleCategory(cat)}>
+                  <Pressable key={cat} style={[styles.bubble, {backgroundColor: vdoCats.indexOf(cat) > -1 ? Colors.customThemes[tintColor].dark.settingsIcons: 'transparent', borderColor: Colors.customThemes[tintColor].dark.settingsIcons}]} onPress={() => toggleCategory(cat)}>
                     <Text style={[styles.category, {color: colorScheme == 'light' ? vdoCats.indexOf(cat) > -1 ? 'white' : 'black' : vdoCats.indexOf(cat) > -1 ? 'black' : '#ccc'}]}>{cat}</Text>
                   </Pressable>
                 )}
@@ -299,7 +299,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 10,
     borderRadius: 12,
-    borderColor: '#2196F3',
     borderWidth: 2
   },
   category: {

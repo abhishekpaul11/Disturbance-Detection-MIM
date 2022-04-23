@@ -41,7 +41,7 @@ const App = () => {
             name: userDetails.name,
             imageUri: userDetails.imageUri,
             status: userDetails.status,
-            vdoCats: userDetails.videoCats
+            vdoCats: userDetails.videoCats == undefined ? [] : userDetails.videoCats
           })
           console.log('User is already present in database')
           return
@@ -53,7 +53,7 @@ const App = () => {
           name: userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1),
           imageUri: 'none',
           status: 'Focusing',
-          videoCats: ['Education'] // allowing only educational YT videos by default
+          videoCats: ['Games', 'Sports', 'Entertainment'] // allowing only educational YT videos by default
         }
         setUser(newUser)
         await API.graphql(graphqlOperation(createUser, {
